@@ -8,7 +8,6 @@ using BepInEx.Bootstrap;
 namespace sailadex
 {
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
-    [BepInDependency(SMH_GUID, SMH_VERSION)]
     [BepInDependency(MODSAVEBACKUPS_GUID, MODSAVEBACKUPS_VERSION)]
     [BepInDependency(PASSAGEDUDE_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(RANDOMENCOUNTERS_GUID, BepInDependency.DependencyFlags.SoftDependency)]
@@ -16,12 +15,10 @@ namespace sailadex
     {
         public const string PLUGIN_GUID = "com.raddude82.sailadex";
         public const string PLUGIN_NAME = "Sail-A-Dex";
-        public const string PLUGIN_VERSION = "1.3.1";
+        public const string PLUGIN_VERSION = "1.4.0";
 
-        public const string SMH_GUID = "com.app24.sailwindmoddinghelper";
-        public const string SMH_VERSION = "2.1.1";
         public const string MODSAVEBACKUPS_GUID = "com.raddude82.modsavebackups";
-        public const string MODSAVEBACKUPS_VERSION = "1.0.2";
+        public const string MODSAVEBACKUPS_VERSION = "1.1.1";
         public const string PASSAGEDUDE_GUID = "pr0skynesis.passagedude";
         public const string RANDOMENCOUNTERS_GUID = "com.raddude82.randomencounters";        
 

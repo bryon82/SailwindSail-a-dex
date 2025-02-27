@@ -40,8 +40,8 @@
     <Reference Include="BepInEx">
       <HintPath>E:\SteamLibrary\steamapps\common\Sailwind\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="SailwindModdingHelper">
-      <HintPath>..\SailwindModdingHelper.dll</HintPath>
+    <Reference Include="ModSaveBackups">
+      <HintPath>E:\SteamLibrary\steamapps\common\Sailwind\BepInEx\plugins\ModSaveBackups.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <HintPath>E:\SteamLibrary\steamapps\common\Sailwind\Sailwind_Data\Managed\System.dll</HintPath>
@@ -84,6 +84,7 @@
     <Compile Include="UILogic\FishCaughtUI.cs" />
     <Compile Include="Patches\LogUIPatches.cs" />
     <Compile Include="Utilities\AssetsLoader.cs" />
+    <Compile Include="Utilities\Helper.cs" />
     <Compile Include="Utilities\Names.cs" />
     <Compile Include="Utilities\NotificationUiQueue.cs" />
     <Compile Include="Plugin.cs" />

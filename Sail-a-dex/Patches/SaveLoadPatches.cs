@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using SailwindModdingHelper;
+using ModSaveBackups;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +31,6 @@ namespace sailadex
                         entry => entry.Value);
                 }
 
-
                 if (Plugin.portsVisitedUIEnabled.Value)
                 {
                     saveContainer.visitedPorts = PortsVisitedUI.instance.visitedPorts.ToDictionary(
@@ -61,8 +60,8 @@ namespace sailadex
                 ModSave.Save(Plugin.instance.Info, saveContainer);
             }
 
-            [HarmonyPatch("LoadModData")]
             [HarmonyPostfix]
+            [HarmonyPatch("LoadModData")]
             public static void LoadModDataPatch()
             {
                 //if (!ModSave.Load(Plugin.instance.Info, out SailadexSaveContainer saveContainer))
@@ -134,16 +133,34 @@ namespace sailadex
                 {
                     if (saveContainer.floatStats != null)
                     {
-                        LoadDictionary(saveContainer.floatStats, StatsUI.instance.floatStats);
+                        // TODO: remove in next major version
+                        if (saveContainer.floatStats.ContainsKey("recordGrcDcTransitTime"))
+                        {
+                            ConvertTransitFloats(saveContainer.floatStats);
+                        }
+                        
+                        LoadDictionary(saveContainer.floatStats, StatsUI.instance.floatStats);                       
                     }
 
                     if (saveContainer.intStats != null)
                     {
+                        // TODO: remove in next major version
+                        if (saveContainer.intStats.ContainsKey("recordGrcDcTransitDay"))
+                        {
+                            ConvertTransitInts(saveContainer.intStats);
+                        }
+
                         LoadDictionary(saveContainer.intStats, StatsUI.instance.intStats);
                     }
 
                     if (saveContainer.boolArrayStats != null)
                     {
+                        // TODO: remove in next major version
+                        if (saveContainer.boolArrayStats.ContainsKey("grcTransit"))
+                        {
+                            ConvertTransitBools(saveContainer.boolArrayStats);
+                        }
+
                         foreach (KeyValuePair<string, bool[]> item in saveContainer.boolArrayStats)
                         {
                             if (StatsUI.instance.boolArrayStats.ContainsKey(item.Key))
@@ -176,7 +193,10 @@ namespace sailadex
             {
                 // load normally if already converted
                 if (!oldFishCount.ContainsKey("31 templefish (A)"))
+                {
                     LoadDictionary(oldFishCount, newFishCount);
+                    return;
+                }
 
                 // convert to new naming style
                 Plugin.logger.LogDebug("Converting fishNames in fish caught counts");
@@ -186,6 +206,62 @@ namespace sailadex
                     if (Regex.IsMatch(name, @"^\d"))
                         name = name.Substring(3, name.IndexOf("(") - 4);
                     newFishCount[name] = item.Value;                    
+                }
+            }
+
+            // Conversion done to accomodate using regions instead of capitals for transit stats
+            // TODO: Remove this at next major version
+            public static void ConvertTransitInts(Dictionary<string, int> transitInts)
+            {
+                Plugin.logger.LogDebug("Converting transit ints");
+
+                for (int i = 0; i < Names.regionTransitNames.Length; i++)
+                {
+                    transitInts["last" + Names.regionTransitNames[i] + "TransitDay"] = transitInts["last" + Names.transitNames[i] + "TransitDay"];
+                    transitInts["record" + Names.regionTransitNames[i] + "TransitDay"] = transitInts["record" + Names.transitNames[i] + "TransitDay"];
+                    transitInts.Remove("last" + Names.transitNames[i] + "TransitDay");
+                    transitInts.Remove("record" + Names.transitNames[i] + "TransitDay");
+                }
+
+                for (int i = 0; i < Names.regions.Length; i++)
+                {
+                    transitInts[Names.regions[i] + "UnderwayDay"] = transitInts[Names.capitals[i] + "UnderwayDay"];
+                    transitInts.Remove(Names.capitals[i] + "UnderwayDay");
+                }
+            }
+
+            // Conversion done to accomodate using regions instead of capitals for transit stats
+            // TODO: Remove this at next major version
+            public static void ConvertTransitFloats(Dictionary<string, float> transitFloats)
+            {
+                Plugin.logger.LogDebug("Converting transit floats");
+
+                for (int i = 0; i < Names.regionTransitNames.Length; i++)
+                {
+                    transitFloats["last" + Names.regionTransitNames[i] + "TransitTime"] = transitFloats["last" + Names.transitNames[i] + "TransitTime"];
+                    transitFloats["record" + Names.regionTransitNames[i] + "TransitTime"] = transitFloats["record" + Names.transitNames[i] + "TransitTime"];
+                    transitFloats.Remove("last" + Names.transitNames[i] + "TransitTime");
+                    transitFloats.Remove("record" + Names.transitNames[i] + "TransitTime");
+                }
+
+                for (int i = 0; i < Names.regions.Length; i++)
+                {
+                    transitFloats[Names.regions[i] + "UnderwayTime"] = transitFloats[Names.capitals[i] + "UnderwayTime"];
+                    transitFloats.Remove(Names.capitals[i] + "UnderwayTime");
+                }
+            }
+
+
+            // Conversion done to accomodate using regions instead of capitals for transit stats
+            // TODO: Remove this at next major version
+            public static void ConvertTransitBools(Dictionary<string, bool[]> transitBools) 
+            {
+                Plugin.logger.LogDebug("Converting transit bools");
+
+                for (int i = 0; i < Names.regions.Length; i++)
+                {
+                    transitBools[Names.regions[i] + "Transit"] = (bool[])transitBools[Names.capitals[i] + "Transit"].Clone();
+                    transitBools.Remove(Names.capitals[i] + "Transit");
                 }
             }
         }        

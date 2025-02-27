@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0] - 2024-02-27
+
+### Added
+- Track the number of Dense Fog encounters from RandomEncounters
+
+### Changed
+- Now track fastest transit between regions no matter what island you leave from or what island you moor at (Happy Bay excluded).
+
+### Removed
+- Dependency on SailwindModdingHelper
+
 ## [v1.3.1] - 2024-09-18
 
 ### Added

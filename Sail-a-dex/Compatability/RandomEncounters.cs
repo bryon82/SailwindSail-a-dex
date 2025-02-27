@@ -1,4 +1,4 @@
-﻿using SailwindModdingHelper;
+﻿
 using BepInEx;
 using BepInEx.Configuration;
 using System;
@@ -12,11 +12,16 @@ namespace sailadex
     {
         internal static BaseUnityPlugin pluginInstance;
         internal static bool isSeaLifeEnabled;
+        internal static bool flotsamEnabled;
+        internal static bool denseFogEnabled;
+
         public static void PatchMod()
         {
             var seaLifeInstalled = pluginInstance.GetPrivateField<BaseUnityPlugin>("seaLifeModInstance");
             var seaLifeControlled = pluginInstance.GetPrivateField<ConfigEntry<bool>>("controlSeaLifeMod");
             isSeaLifeEnabled = seaLifeInstalled != null && seaLifeControlled.Value;
+            flotsamEnabled = pluginInstance.GetPrivateField<ConfigEntry<bool>>("enableFlotsam").Value;
+            denseFogEnabled = pluginInstance.GetPrivateField<ConfigEntry<bool>>("enableDenseFog").Value;
 
             Type encounterGeneratorClass = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(asm => asm.GetTypes())
@@ -38,7 +43,15 @@ namespace sailadex
             [HarmonyPostfix]
             public static void FlotsamCountPatch()
             {
-                StatsUI.instance.IncrementIntStat("FlotsamEncounters");
+                if (flotsamEnabled)
+                    StatsUI.instance.IncrementIntStat("FlotsamEncounters");
+            }
+
+            [HarmonyPostfix]
+            public static void DenseFogCountPatch()
+            {
+                if (denseFogEnabled)
+                    StatsUI.instance.IncrementIntStat("DenseFogEncounters");
             }
 
             [HarmonyPostfix]

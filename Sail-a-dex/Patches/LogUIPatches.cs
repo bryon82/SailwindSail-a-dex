@@ -324,14 +324,15 @@ namespace sailadex
                 foreach (string ltStat in Names.intStatNames)
                 {
                     if (ltStat == "UnderwayDay") continue;
-                    if (ltStat == "FlotsamEncounters" && RandomEncounters.pluginInstance == null) continue;
+                    if (ltStat == "FlotsamEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled)) continue;
+                    if (ltStat == "DenseFogEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled)) continue;
                     if (ltStat == "SeaLifeEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.isSeaLifeEnabled)) continue;
                     AddTrackedStat(statsTextGO, ltStat, 0.035f - 0.035f * j, statTMs, true);
                     j++;
                 }
 
                 int i = 0;
-                foreach (string transit in Names.transitNames)
+                foreach (string transit in Names.regionTransitNames)
                 {
                     AddTrackedStat(statsTextGO, transit, 0.205f - 0.035f * i, statTMs, false, true);
                     i++;
@@ -362,7 +363,7 @@ namespace sailadex
 
                 GameObject transitTextGO = GameObject.Instantiate(statsTextGO, statsTextGO.transform.parent);
                 transitTextGO.name = "transit times header";
-                transitTextGO.GetComponent<TextMesh>().text = "Transit Times         Last                            Record";
+                transitTextGO.GetComponent<TextMesh>().text = "Transit Times          Last                           Record";
                 transitTextGO.transform.localPosition = new Vector3(0.12f, 0.24f, -0.007f);
                 UnityEngine.Object.Destroy(transitTextGO.transform.GetChild(4).gameObject);
                 UnityEngine.Object.Destroy(transitTextGO.transform.GetChild(3).gameObject);
@@ -385,7 +386,7 @@ namespace sailadex
                 if (ltime)
                 {
                     UnityEngine.Object.Destroy(newTextGO.transform.GetChild(1).gameObject);
-                    newTextGO.transform.GetChild(0).localPosition = new Vector3(40f, 0f, 0f);
+                    newTextGO.transform.GetChild(0).localPosition = new Vector3(41f, 0f, 0f);
                 }                    
                 newTextGO.name = name;
                 newTextGO.transform.parent = templateGO.transform.parent;

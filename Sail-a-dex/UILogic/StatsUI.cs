@@ -1,5 +1,4 @@
 ﻿using BepInEx;
-using SailwindModdingHelper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -45,7 +44,7 @@ namespace sailadex
                 intStats.Add("record" + stat, 0);
             }            
 
-            foreach (string transit in Names.transitNames)
+            foreach (string transit in Names.regionTransitNames)
             {
                 floatStats.Add("last" + transit + "TransitTime", 0f);
                 intStats.Add("last" + transit + "TransitDay", 0);
@@ -53,11 +52,11 @@ namespace sailadex
                 intStats.Add("record" + transit + "TransitDay", 0);
             }
 
-            foreach (string capital in Names.capitals)
+            foreach (string region in Names.regions)
             {
-                floatStats.Add(capital + "UnderwayTime", 0f);
-                intStats.Add(capital + "UnderwayDay", 0);
-                boolArrayStats.Add(capital + "Transit", new bool[4]);
+                floatStats.Add(region + "UnderwayTime", 0f);
+                intStats.Add(region + "UnderwayDay", 0);
+                boolArrayStats.Add(region + "Transit", new bool[4]);
             }
         }
 
@@ -69,17 +68,16 @@ namespace sailadex
             floatStats["currentCargoMass"] = boatGameObject
                 .GetComponent<BoatMass>()
                 .GetPrivateField<List<ItemRigidbody>>("itemsOnBoat")
-                .Where(item => item.GetShipItem().GetComponent<Good>() != null
-                    && (item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("crate")
-                    || item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("package")
-                    || item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel")))
+                .Where(item => item.GetShipItem().GetComponent<Good>() != null &&
+                    (item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("crate") ||
+                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("package")||
+                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel")))
                 .Sum(item => item.GetBody().mass);
         }
 
         public void RegisterUnderway(string islandName)
         {
-            if (islandName == null || islandName == "")
-                return;
+            if (islandName == null || islandName == "") return;
 
             if (floatStats["recordCargoMass"] < floatStats["currentCargoMass"])            
                 floatStats["recordCargoMass"] = floatStats["currentCargoMass"];            
@@ -87,42 +85,45 @@ namespace sailadex
             floatStats["UnderwayTime"] = Sun.sun.globalTime;
             intStats["UnderwayDay"] = GameState.day;
 
-            if (islandName.Contains("1 A")) {
-                floatStats["grcUnderwayTime"] = Sun.sun.globalTime;
-                intStats["grcUnderwayDay"] = GameState.day;
+            //fastest transit
+            if (islandName == "island 18 M (HappyBay)") return;
+
+            if (Names.alankhIslands.Contains(islandName)) {
+                floatStats["AaUnderwayTime"] = Sun.sun.globalTime;
+                intStats["AaUnderwayDay"] = GameState.day;
                 for (int i = 0; i < 4; i++)
                 {
-                    boolArrayStats["grcTransit"][i] = false;
+                    boolArrayStats["AaTransit"][i] = false;
                 }                
                 return;
             }
-            if (islandName.Contains("9 E"))
+            if (Names.emeraldIslands.Contains(islandName))
             {
-                floatStats["dcUnderwayTime"] = Sun.sun.globalTime;
-                intStats["dcUnderwayDay"] = GameState.day;
+                floatStats["EaUnderwayTime"] = Sun.sun.globalTime;
+                intStats["EaUnderwayDay"] = GameState.day;
                 for (int i = 0; i < 4; i++)
                 {
-                    boolArrayStats["dcTransit"][i] = false;
+                    boolArrayStats["EaTransit"][i] = false;
                 }
                 return;
             }
-            if (islandName.Contains("15 M"))
+            if (Names.mediIslands.Contains(islandName))
             {
-                floatStats["faUnderwayTime"] = Sun.sun.globalTime;
-                intStats["faUnderwayDay"] = GameState.day;
+                floatStats["AeUnderwayTime"] = Sun.sun.globalTime;
+                intStats["AeUnderwayDay"] = GameState.day;
                 for (int i = 0; i < 4; i++)
                 {
-                    boolArrayStats["faTransit"][i] = false;
+                    boolArrayStats["AeTransit"][i] = false;
                 }
                 return;
             }
-            if (islandName.Contains("27 Lagoon"))
+            if (Names.lagoonIslands.Contains(islandName))
             {
-                floatStats["kbUnderwayTime"] = Sun.sun.globalTime;
-                intStats["kbUnderwayDay"] = GameState.day;
+                floatStats["FflUnderwayTime"] = Sun.sun.globalTime;
+                intStats["FflUnderwayDay"] = GameState.day;
                 for (int i = 0; i < 4; i++)
                 {
-                    boolArrayStats["kbTransit"][i] = false;
+                    boolArrayStats["FflTransit"][i] = false;
                 }
             }
         }
@@ -134,9 +135,9 @@ namespace sailadex
 
             UpdateStats();
 
-            if (intStats["currentUnderwayDay"] > intStats["recordUnderwayDay"] 
-                || (intStats["currentUnderwayDay"] == intStats["recordUnderwayDay"]
-                && floatStats["currentUnderwayTime"] > floatStats["recordUnderwayTime"]))
+            if (intStats["currentUnderwayDay"] > intStats["recordUnderwayDay"] ||
+                (intStats["currentUnderwayDay"] == intStats["recordUnderwayDay"] &&
+                floatStats["currentUnderwayTime"] > floatStats["recordUnderwayTime"]))
             {
                 intStats["recordUnderwayDay"] = intStats["currentUnderwayDay"];
                 floatStats["recordUnderwayTime"] = floatStats["currentUnderwayTime"];
@@ -146,44 +147,46 @@ namespace sailadex
             intStats["UnderwayDay"] = 0;
 
             // fastest transit
-            if (islandName.Contains("1 A"))
+            if (islandName == "island 18 M (HappyBay)") return;
+
+            if (Names.alankhIslands.Contains(islandName))
             {               
-                if (!boolArrayStats["dcTransit"][0] && (floatStats["dcUnderwayTime"] > 0f || intStats["dcUnderwayDay"] > 0))
-                    CheckTransitTime("dc", "DcGrc", 0);
-                if (!boolArrayStats["faTransit"][0] && (floatStats["faUnderwayTime"] > 0f || intStats["faUnderwayDay"] > 0))
-                    CheckTransitTime("fa", "FaGrc", 0);
-                if (!boolArrayStats["kbTransit"][0] && (floatStats["kbUnderwayTime"] > 0f || intStats["kbUnderwayDay"] > 0))
-                    CheckTransitTime("kb", "KbGrc", 0);
+                if (!boolArrayStats["EaTransit"][0] && (floatStats["EaUnderwayTime"] > 0f || intStats["EaUnderwayDay"] > 0))
+                    CheckTransitTime("Ea", "EaAa", 0);
+                if (!boolArrayStats["AeTransit"][0] && (floatStats["AeUnderwayTime"] > 0f || intStats["AeUnderwayDay"] > 0))
+                    CheckTransitTime("Ae", "AeAa", 0);
+                if (!boolArrayStats["FflTransit"][0] && (floatStats["FflUnderwayTime"] > 0f || intStats["FflUnderwayDay"] > 0))
+                    CheckTransitTime("Ffl", "FflAa", 0);
                 return;
             }
-            if (islandName.Contains("9 E"))
+            if (Names.emeraldIslands.Contains(islandName))
             {   
-                if (!boolArrayStats["grcTransit"][1] && (floatStats["grcUnderwayTime"] > 0f || intStats["grcUnderwayDay"] > 0))
-                    CheckTransitTime("grc", "GrcDc", 1);
-                if (!boolArrayStats["faTransit"][1] && (floatStats["faUnderwayTime"] > 0f || intStats["faUnderwayDay"] > 0))
-                    CheckTransitTime("fa", "FaDc", 1);
-                if (!boolArrayStats["kbTransit"][1] && (floatStats["kbUnderwayTime"] > 0f || intStats["kbUnderwayDay"] > 0))
-                    CheckTransitTime("kb", "KbDc", 1);
+                if (!boolArrayStats["AaTransit"][1] && (floatStats["AaUnderwayTime"] > 0f || intStats["AaUnderwayDay"] > 0))
+                    CheckTransitTime("Aa", "AaEa", 1);
+                if (!boolArrayStats["AeTransit"][1] && (floatStats["AeUnderwayTime"] > 0f || intStats["AeUnderwayDay"] > 0))
+                    CheckTransitTime("Ae", "AeEa", 1);
+                if (!boolArrayStats["FflTransit"][1] && (floatStats["FflUnderwayTime"] > 0f || intStats["FflUnderwayDay"] > 0))
+                    CheckTransitTime("Ffl", "FflEa", 1);
                 return;
             }
-            if (islandName.Contains("15 M"))
+            if (Names.mediIslands.Contains(islandName))
             {
-                if (!boolArrayStats["grcTransit"][2] && (floatStats["grcUnderwayTime"] > 0f || intStats["grcUnderwayDay"] > 0))
-                    CheckTransitTime("grc", "GrcFa", 2);
-                if (!boolArrayStats["dcTransit"][2] && (floatStats["dcUnderwayTime"] > 0f || intStats["dcUnderwayDay"] > 0))
-                    CheckTransitTime("dc", "DcFa", 2);
-                if (!boolArrayStats["kbTransit"][2] && (floatStats["kbUnderwayTime"] > 0f || intStats["kbUnderwayDay"] > 0))
-                    CheckTransitTime("kb", "KbFa", 2);
+                if (!boolArrayStats["AaTransit"][2] && (floatStats["AaUnderwayTime"] > 0f || intStats["AaUnderwayDay"] > 0))
+                    CheckTransitTime("Aa", "AaAe", 2);
+                if (!boolArrayStats["EaTransit"][2] && (floatStats["EaUnderwayTime"] > 0f || intStats["EaUnderwayDay"] > 0))
+                    CheckTransitTime("Ea", "EaAe", 2);
+                if (!boolArrayStats["FflTransit"][2] && (floatStats["FflUnderwayTime"] > 0f || intStats["FflUnderwayDay"] > 0))
+                    CheckTransitTime("Ffl", "FflAe", 2);
                 return;
             }
-            if (islandName.Contains("27 Lagoon"))
+            if (Names.lagoonIslands.Contains(islandName))
             {
-                if (!boolArrayStats["grcTransit"][3] && (floatStats["grcUnderwayTime"] > 0f || intStats["grcUnderwayDay"] > 0))
-                    CheckTransitTime("grc", "GrcKb", 3);
-                if (!boolArrayStats["dcTransit"][3] && (floatStats["dcUnderwayTime"] > 0f || intStats["dcUnderwayDay"] > 0))
-                    CheckTransitTime("dc", "DcKb", 3);
-                if (!boolArrayStats["faTransit"][3] && (floatStats["faUnderwayTime"] > 0f || intStats["faUnderwayDay"] > 0))
-                    CheckTransitTime("fa", "FaKb", 3);
+                if (!boolArrayStats["AaTransit"][3] && (floatStats["AaUnderwayTime"] > 0f || intStats["AaUnderwayDay"] > 0))
+                    CheckTransitTime("Aa", "AaFfl", 3);
+                if (!boolArrayStats["EaTransit"][3] && (floatStats["EaUnderwayTime"] > 0f || intStats["EaUnderwayDay"] > 0))
+                    CheckTransitTime("Ea", "EaFfl", 3);
+                if (!boolArrayStats["AeTransit"][3] && (floatStats["AeUnderwayTime"] > 0f || intStats["AeUnderwayDay"] > 0))
+                    CheckTransitTime("Ae", "AeFfl", 3);
             }            
         }
 
@@ -201,11 +204,11 @@ namespace sailadex
             intStats["last" + transitCode + "TransitDay"] = transitDay;
             floatStats["last" + transitCode + "TransitTime"] = transitTime;
 
-            if ((intStats["record" + transitCode + "TransitDay"] == 0
-                && floatStats["record" + transitCode + "TransitTime"] == 0f)
-                || intStats["record" + transitCode + "TransitDay"] > transitDay
-                || (intStats["record" + transitCode + "TransitDay"] == transitDay
-                && floatStats["record" + transitCode + "TransitTime"] > transitTime))
+            if ((intStats["record" + transitCode + "TransitDay"] == 0 &&
+                floatStats["record" + transitCode + "TransitTime"] == 0f) ||
+                intStats["record" + transitCode + "TransitDay"] > transitDay ||
+                (intStats["record" + transitCode + "TransitDay"] == transitDay &&
+                floatStats["record" + transitCode + "TransitTime"] > transitTime))
             {
                 intStats["record" + transitCode + "TransitDay"] = transitDay;
                 floatStats["record" + transitCode + "TransitTime"] = transitTime;
@@ -275,14 +278,15 @@ namespace sailadex
             foreach (string stat in Names.intStatNames)
             {                
                 if (stat == "UnderwayDay") continue;                    
-                if (stat == "FlotsamEncounters" && RandomEncounters.pluginInstance == null) continue;
+                if (stat == "FlotsamEncounters" && RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled) continue;
+                if (stat == "DenseFogEncounters" && RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled) continue;
                 if (stat == "SeaLifeEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.isSeaLifeEnabled)) continue;
 
                 statTMs[stat].text = AddSpace(stat);
                 statTMs["current" + stat].text = $"{intStats["current" + stat]:#,##0}";                
             }
 
-            foreach (string transit in Names.transitNames)
+            foreach (string transit in Names.regionTransitNames)
             {
                 statTMs[transit].text = AddTo(transit);
                 statTMs["last" + transit].text = UnderwayText(intStats["last" + transit + "TransitDay"], floatStats["last" + transit + "TransitTime"]);
@@ -319,13 +323,13 @@ namespace sailadex
         public void PlayerTeleported()
         {
             Plugin.logger.LogInfo("Player teleported, resetting current transits");
-            foreach (string capital in Names.capitals)
+            foreach (string region in Names.regions)
             {
                 int j = 0;
                 for (int i = 0; i < 4; i++) 
                 {
                     if (i != j)
-                        boolArrayStats[capital + "Transit"][i] = true;
+                        boolArrayStats[region + "Transit"][i] = true;
                     j++;
                 }
             }

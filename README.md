@@ -3,9 +3,9 @@
 This Sailwind mod is intended to keep track of various player activities along with badges that are acquired upon meeting certain criteria. Below are the currently tracked items and what is configurable.
 
 ### Requires
+
 * [BepInEx 5.4.23](https://github.com/BepInEx/BepInEx/releases)
-* [SailwindModdingHelper 2.1.1](https://thunderstore.io/c/sailwind/p/App24/SailwindModdingHelper/)
-* [ModSaveBackups 1.0.2](https://thunderstore.io/c/sailwind/p/RadDude/ModSaveBackups/)
+* [ModSaveBackups 1.1.1](https://thunderstore.io/c/sailwind/p/RadDude/ModSaveBackups/)
 
 ## Fish Caught Log
 
@@ -31,11 +31,12 @@ Cargo mass is is the mass some of all crates, barrels, and packages.
 Cargo mass stat "Record" will be recorded once you unmoor from the dock.  
 Underway "Record" is the longest time you are out at sea before pulling into port.  
 Transit time "Record" is the fastest time you made a transit.  
-The starting time for transits are tracked from when you leave a capital city. This time will be used for when you moor at other capital cities  
-(only the first time mooring at a destintation capital city from the origin captial city will be recorded, i.e. You leave Gold Rock City, only the first time reaching Dragon Cliffs will be recorded).  
-You don't have to go directly to another capital city, you can stop other ports along the way.  
+The starting time for transits are tracked from the last island you were moored at from a region that you leave. This time will be used for when you moor at any island in other regions  
+(only the first time mooring at a city in another region will be recorded, i.e. You leave Gold Rock City, only the first time reaching Crab Beach will be recorded).  
+Happy Bay is ignored for calculating fastest transits.  
 If you use PassageDude mod and book travel or teleport via console that will reset your currently tracked transits.  
-If you have RandomEncounters installed, Flotsam encounters will be tracked and, if you have the SeaLifeMod installed and controlled through RandomEncounters it, the SeaLife encounters will be tracked as well.
+If you have RandomEncounters installed, Flotsam encounters and Dense Fog encounters if enabled will be tracked if.  
+If you have the SeaLifeMod installed and controlled through RandomEncounters, the SeaLife encounters will be tracked as well.  
 
 ## Notifications
 
@@ -43,6 +44,7 @@ Notifications will pop up along with a ship bell sound on badges earned and fast
 
 
 ## Configurable in BepInEx config
+
 * By default the fish names are hidden before being caught for the first time, this can be disabled.
 * By default port names are visible, can be configured to be hidden until visited for the first time.
 * Notifications can be disabled.
@@ -52,5 +54,6 @@ Notifications will pop up along with a ship bell sound on badges earned and fast
   **WARNING**: Disabling a previously enabled log and then saving the game will erase all previously saved log progress.
 
 ## Installation
+
 Place the Sail-a-dex folder (not the contents, the whole thing) into the Sailwind/BepInEx/Plugins folder.  
 If upgrading from v1.0.0 delete the old Sail-a-dex.dll from the BepInEx/plugins folder first.  
