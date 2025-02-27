@@ -26,7 +26,7 @@ Access this log by selecting the "ports visited" bookmark in the log.
 ## Stats & Transit Log
 
 ![Screenshot of the Stats & Transit UI](https://github.com/bryon82/Sail-a-dex/blob/main/Screenshots/statsUI.jpg)  
-A UI showing various stats and transit times between region capital cities.  
+A UI showing various stats and transit times between regions.  
 Cargo mass is is the mass some of all crates, barrels, and packages.  
 Cargo mass stat "Record" will be recorded once you unmoor from the dock.  
 Underway "Record" is the longest time you are out at sea before pulling into port.  
