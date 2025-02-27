@@ -71,7 +71,8 @@ namespace sailadex
                 .Where(item => item.GetShipItem().GetComponent<Good>() != null &&
                     (item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("crate") ||
                     item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("package")||
-                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel")))
+                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel") || 
+                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("bundle")))
                 .Sum(item => item.GetBody().mass);
         }
 
