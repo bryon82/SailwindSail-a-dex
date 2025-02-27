@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.1] - 2024-02-27
+
+### Fixed
+- Mass calculation not including logs and lumber
+
 ## [v1.4.0] - 2024-02-27
 
 ### Added
