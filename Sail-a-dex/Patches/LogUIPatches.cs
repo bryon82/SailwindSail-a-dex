@@ -316,10 +316,11 @@ namespace sailadex
                 statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontStyle = FontStyle.Normal;
                 Dictionary<string, TextMesh> statTMs = new Dictionary<string, TextMesh>();
 
-                AddTrackedStat(statsTextGO, "CargoMass", 0.205f, statTMs);
-                AddTrackedStat(statsTextGO, "UnderwayTime", 0.205f - 0.035f, statTMs);
+                AddTrackedStat(statsTextGO, "CargoMass", 0.215f, statTMs);
+                AddTrackedStat(statsTextGO, "TotalMass", 0.215f - 0.03f, statTMs);
+                AddTrackedStat(statsTextGO, "UnderwayTime", 0.215f - 0.03f * 2, statTMs);
 
-                AddTrackedStat(statsTextGO, "MilesSailed", 0.07f, statTMs, true);
+                AddTrackedStat(statsTextGO, "MilesSailed", 0.08f, statTMs, true);
                 int j = 0;
                 foreach (string ltStat in Names.intStatNames)
                 {
@@ -327,14 +328,14 @@ namespace sailadex
                     if (ltStat == "FlotsamEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled)) continue;
                     if (ltStat == "DenseFogEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled)) continue;
                     if (ltStat == "SeaLifeEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.isSeaLifeEnabled)) continue;
-                    AddTrackedStat(statsTextGO, ltStat, 0.035f - 0.035f * j, statTMs, true);
+                    AddTrackedStat(statsTextGO, ltStat, 0.05f - 0.03f * j, statTMs, true);
                     j++;
                 }
 
                 int i = 0;
                 foreach (string transit in Names.regionTransitNames)
                 {
-                    AddTrackedStat(statsTextGO, transit, 0.205f - 0.035f * i, statTMs, false, true);
+                    AddTrackedStat(statsTextGO, transit, 0.215f - 0.03f * i, statTMs, false, true);
                     i++;
                 }
 

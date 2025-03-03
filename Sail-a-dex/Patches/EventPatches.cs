@@ -199,8 +199,17 @@ namespace sailadex
             [HarmonyPatch("FixedUpdate")]
             public static void FixedUpdatePatch()
             {
-                if (Plugin.statsUIEnabled.Value && GameState.currentBoat != null)
+                if (Plugin.statsUIEnabled.Value && GameState.currentBoat != null)                
                     StatsUI.instance.TrackDistance();
+                
+            }
+
+            [HarmonyPostfix]
+            [HarmonyPatch("UpdateMass")]
+            public static void UpdateMassPatch(Rigidbody ___body)
+            {
+                if (Plugin.statsUIEnabled.Value && GameState.currentBoat != null)
+                    StatsUI.instance.RegisterTotalMass(___body.mass);
             }
         }
 

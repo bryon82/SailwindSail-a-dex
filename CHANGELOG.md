@@ -2,12 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v1.4.1] - 2024-02-27
+## [v1.4.2] - 2025-03-03
+
+### Added
+- Total mass stat
+
+### Changed
+- Stats log spacing
+- Cleaned up ReadMe text
 
 ### Fixed
-- Mass calculation not including logs and lumber
+- Dense fog encounter stat not incrementing
 
-## [v1.4.0] - 2024-02-27
+## [v1.4.1] - 2025-02-27
+
+### Fixed
+- Cargo mass calculation not including logs and lumber
+
+## [v1.4.0] - 2025-02-27
 
 ### Added
 - Track the number of Dense Fog encounters from RandomEncounters

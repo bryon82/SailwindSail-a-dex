@@ -113,6 +113,7 @@ namespace sailadex
         public static string[] floatStatNames =
         {
             "CargoMass",
+            "TotalMass",
             "UnderwayTime",
             "MilesSailed"
         };

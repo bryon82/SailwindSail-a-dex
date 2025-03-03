@@ -32,6 +32,10 @@ namespace sailadex
             MethodInfo flotsamPatch = AccessTools.Method(typeof(EncounterGeneratorPatches), "FlotsamCountPatch");
             Plugin.harmony.Patch(flotsamOriginal, new HarmonyMethod(flotsamPatch));
 
+            MethodInfo denseFogOriginal = AccessTools.Method(encounterGeneratorClass, "GenerateDenseFog");
+            MethodInfo denseFogPatch = AccessTools.Method(typeof(EncounterGeneratorPatches), "DenseFogCountPatch");
+            Plugin.harmony.Patch(denseFogOriginal, new HarmonyMethod(denseFogPatch));
+
             MethodInfo sealifeOriginal = AccessTools.Method(encounterGeneratorClass, "GenerateWhale");
             MethodInfo sealifePatch = AccessTools.Method(typeof(EncounterGeneratorPatches), "SeaLifeCountPatch");
             Plugin.harmony.Patch(sealifeOriginal, new HarmonyMethod(sealifePatch));

@@ -68,20 +68,28 @@ namespace sailadex
             floatStats["currentCargoMass"] = boatGameObject
                 .GetComponent<BoatMass>()
                 .GetPrivateField<List<ItemRigidbody>>("itemsOnBoat")
-                .Where(item => item.GetShipItem().GetComponent<Good>() != null &&
-                    (item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("crate") ||
-                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("package")||
-                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel") || 
-                    item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("bundle")))
-                .Sum(item => item.GetBody().mass);
+                .Where(item => item.GetShipItem().GetComponent<Good>() != null
+                    && (item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("crate")
+                    || item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("package")
+                    || item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("barrel")
+                    || item.GetShipItem().GetComponent<Good>().sizeDescription.Contains("bundle")))
+                .Sum(item => item.GetBody().mass);            
+        }
+
+        public void RegisterTotalMass(float totalMass)
+        {
+            floatStats["currentTotalMass"] = totalMass;
         }
 
         public void RegisterUnderway(string islandName)
         {
             if (islandName == null || islandName == "") return;
 
-            if (floatStats["recordCargoMass"] < floatStats["currentCargoMass"])            
-                floatStats["recordCargoMass"] = floatStats["currentCargoMass"];            
+            if (floatStats["recordCargoMass"] < floatStats["currentCargoMass"])
+                floatStats["recordCargoMass"] = floatStats["currentCargoMass"];
+           
+            if (floatStats["recordTotalMass"] < floatStats["currentTotalMass"])
+                floatStats["recordTotalMass"] = floatStats["currentTotalMass"];
 
             floatStats["UnderwayTime"] = Sun.sun.globalTime;
             intStats["UnderwayDay"] = GameState.day;
@@ -136,9 +144,9 @@ namespace sailadex
 
             UpdateStats();
 
-            if (intStats["currentUnderwayDay"] > intStats["recordUnderwayDay"] ||
-                (intStats["currentUnderwayDay"] == intStats["recordUnderwayDay"] &&
-                floatStats["currentUnderwayTime"] > floatStats["recordUnderwayTime"]))
+            if (intStats["currentUnderwayDay"] > intStats["recordUnderwayDay"] 
+                || (intStats["currentUnderwayDay"] == intStats["recordUnderwayDay"]
+                && floatStats["currentUnderwayTime"] > floatStats["recordUnderwayTime"]))
             {
                 intStats["recordUnderwayDay"] = intStats["currentUnderwayDay"];
                 floatStats["recordUnderwayTime"] = floatStats["currentUnderwayTime"];
@@ -205,11 +213,11 @@ namespace sailadex
             intStats["last" + transitCode + "TransitDay"] = transitDay;
             floatStats["last" + transitCode + "TransitTime"] = transitTime;
 
-            if ((intStats["record" + transitCode + "TransitDay"] == 0 &&
-                floatStats["record" + transitCode + "TransitTime"] == 0f) ||
-                intStats["record" + transitCode + "TransitDay"] > transitDay ||
-                (intStats["record" + transitCode + "TransitDay"] == transitDay &&
-                floatStats["record" + transitCode + "TransitTime"] > transitTime))
+            if ((intStats["record" + transitCode + "TransitDay"] == 0
+                && floatStats["record" + transitCode + "TransitTime"] == 0f)
+                || intStats["record" + transitCode + "TransitDay"] > transitDay
+                || (intStats["record" + transitCode + "TransitDay"] == transitDay
+                && floatStats["record" + transitCode + "TransitTime"] > transitTime))
             {
                 intStats["record" + transitCode + "TransitDay"] = transitDay;
                 floatStats["record" + transitCode + "TransitTime"] = transitTime;
@@ -260,6 +268,11 @@ namespace sailadex
                         statTMs[stat].text = AddSpace(stat);
                         statTMs["currentCargoMass"].text = floatStats["currentCargoMass"] == 0f ? "-" : $"{floatStats["currentCargoMass"]:#,##0.#} lbs";
                         statTMs["recordCargoMass"].text = floatStats["recordCargoMass"] == 0f ? "-" : $"{floatStats["recordCargoMass"]:#,##0.#} lbs";
+                        break;
+                    case "TotalMass":
+                        statTMs[stat].text = AddSpace(stat);
+                        statTMs["currentTotalMass"].text = floatStats["currentTotalMass"] == 0f ? "-" : $"{floatStats["currentTotalMass"]:#,##0.#} lbs";
+                        statTMs["recordTotalMass"].text = floatStats["recordTotalMass"] == 0f ? "-" : $"{floatStats["recordTotalMass"]:#,##0.#} lbs";
                         break;
                     case "MilesSailed":
                         statTMs[stat].text = AddSpace(stat);

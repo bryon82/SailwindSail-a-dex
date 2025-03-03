@@ -29,11 +29,11 @@ Access this log by selecting the "ports visited" bookmark in the log.
 A UI showing various stats and transit times between regions.  
 Cargo mass is is the mass some of all crates, barrels, and packages.  
 Cargo mass stat "Record" will be recorded once you unmoor from the dock.  
+Total mass stat is the total mass of the ship and operates the same as cargo mass  
 Underway "Record" is the longest time you are out at sea before pulling into port.  
 Transit time "Record" is the fastest time you made a transit.  
-The starting time for transits are tracked from the last island you were moored at from a region that you leave. This time will be used for when you moor at any island in other regions  
-(only the first time mooring at a city in another region will be recorded, i.e. You leave Gold Rock City, only the first time reaching Crab Beach will be recorded).  
-Happy Bay is ignored for calculating fastest transits.  
+The starting time for transits are tracked from the last island you were moored at from a region that you leave. This time will be used for when you moor at any island in other regions. Happy Bay is ignored for calculating fastest transits.  
+(only the first time mooring at a city in another region will be recorded, i.e. You leave Gold Rock City, only the first time reaching Crab Beach will the AA to EA transit be recorded).  
 If you use PassageDude mod and book travel or teleport via console that will reset your currently tracked transits.  
 If you have RandomEncounters installed, Flotsam encounters and Dense Fog encounters if enabled will be tracked if.  
 If you have the SeaLifeMod installed and controlled through RandomEncounters, the SeaLife encounters will be tracked as well.  
