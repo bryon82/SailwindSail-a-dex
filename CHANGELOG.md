@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.3] - 2025-03-05
+
+### Fixed
+- Disabling dense fog or flotsam encounters in RandomEncounters mod causing text on StatsUI not to update properly
+
 ## [v1.4.2] - 2025-03-03
 
 ### Added

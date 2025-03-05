@@ -290,10 +290,10 @@ namespace sailadex
             }
 
             foreach (string stat in Names.intStatNames)
-            {                
-                if (stat == "UnderwayDay") continue;                    
-                if (stat == "FlotsamEncounters" && RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled) continue;
-                if (stat == "DenseFogEncounters" && RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled) continue;
+            {
+                if (stat == "UnderwayDay") continue;
+                if (stat == "FlotsamEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled)) continue;
+                if (stat == "DenseFogEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled)) continue;
                 if (stat == "SeaLifeEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.isSeaLifeEnabled)) continue;
 
                 statTMs[stat].text = AddSpace(stat);
