@@ -53,6 +53,9 @@ namespace sailadex
             "Mount Malefic",
             "Siren Song",
             "Eastwind",
+            "Firefly Grotto",
+            "Aestra Abbey",            
+            "Fey Valley",
             "Happy Bay",
             "Chronos",
         };
@@ -87,6 +90,9 @@ namespace sailadex
             "Mount Malefic",
             "Siren Song",
             "Eastwind",
+            "Firefly Grotto",
+            "Aestra Abbey",
+            "Fey Valley",            
             "Happy Bay",
             "Chronos",
             //Fire Fish Lagoon
@@ -201,6 +207,9 @@ namespace sailadex
             "island 18 M (HappyBay)",
             "island 19 M (Eastwind)",
             "island 21 M (Siren Song)",
+            "island 33 M cave church",
+            "island 34 M monastery",
+            "island 35 M valley",
             "island 23 M oracle",
             "island 25 (chronos)",
         };

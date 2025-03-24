@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using static sailadex.LogUIPatches;
 
 namespace sailadex
 {
@@ -64,33 +63,11 @@ namespace sailadex
             [HarmonyPatch("LoadModData")]
             public static void LoadModDataPatch()
             {
-                //if (!ModSave.Load(Plugin.instance.Info, out SailadexSaveContainer saveContainer))
-                if (!ModSave.Load(Plugin.instance.Info, out object objSaveContainer))
+                if (!ModSave.Load(Plugin.instance.Info, out SailadexSaveContainer saveContainer))
                 { 
                     Plugin.logger.LogWarning("Save file loading failed. If this is the first time loading this save with this mod, this is normal.");
                     return;                                                                          
                 }
-
-                // convert save containers
-                // TODO: remove in next major version
-                SailadexSaveContainer saveContainer;
-                if (objSaveContainer.GetType() == typeof(RaddudeSaveContainer))
-                {
-                    Plugin.logger.LogDebug("Converting save container");
-                    RaddudeSaveContainer oldSaveContainer = (RaddudeSaveContainer)objSaveContainer;
-                    saveContainer = new SailadexSaveContainer()
-                    {
-                        caughtFish = oldSaveContainer.caughtFish,
-                        visitedPorts = oldSaveContainer.visitedPorts,
-                        fishBadges = oldSaveContainer.fishBadges,
-                        portBadges = oldSaveContainer.portBadges,
-                        floatStats = oldSaveContainer.floatStats,
-                        intStats = oldSaveContainer.intStats,
-                        boolArrayStats = oldSaveContainer.boolArrayStats
-                    };
-                }
-                else
-                    saveContainer = (SailadexSaveContainer)objSaveContainer;
 
                 if (Plugin.fishCaughtUIEnabled.Value)
                 {
@@ -104,12 +81,6 @@ namespace sailadex
                     {
                         LoadDictionary(saveContainer.fishBadges, FishCaughtUI.instance.fishBadges);
                     }
-
-                    // for 1.0.0 saves that didn't have badges yet
-                    // TODO: remove in next major version
-                    foreach (string fishName in Names.fishNames)
-                        FishCaughtUI.instance.CheckIndividualFishBadges(fishName);
-                    FishCaughtUI.instance.CheckAllFishBadges();
                 }
 
                 if (Plugin.portsVisitedUIEnabled.Value)
@@ -123,10 +94,6 @@ namespace sailadex
                     {
                         LoadDictionary(saveContainer.portBadges, PortsVisitedUI.instance.portBadges);
                     }
-
-                    // for 1.0.0 saves that didn't have badges yet
-                    // TODO: remove in next major version
-                    PortsVisitedUI.instance.CheckBadges();
                 }
 
                 if (Plugin.statsUIEnabled.Value)

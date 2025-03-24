@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.4] - 2025-03-23
+
+### Added
+- In Ports Visited log added ports for new islands added in update 0.30
+
 ## [v1.4.3] - 2025-03-05
 
 ### Fixed
