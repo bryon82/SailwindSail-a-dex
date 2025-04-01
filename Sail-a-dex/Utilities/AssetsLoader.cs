@@ -7,17 +7,51 @@ namespace sailadex
 {
     internal class AssetsLoader
     {
-        public static Dictionary<string, Material> materials;
-        public static Dictionary<string, Texture2D> textures;
         public static AudioClip notificationSound;
+        public static Dictionary<string, Material> materials;
+        public static Dictionary<string, Texture2D> textures;        
 
         public static void Start()
         {
             materials = new Dictionary<string, Material>();
             textures = new Dictionary<string, Texture2D>();
+
+            LoadAudio();
+            LoadFishBadges();
+            LoadPortBadges();
         }
 
-        public static void LoadFishBadges()
+        private static void LoadAudio()
+        {
+            List<AudioClip> audioClips = new List<AudioClip>();
+            GetAudioClip("twoBells", audioClips);
+            Debug.Log($"AudioClips length {audioClips.Count}");
+            notificationSound = audioClips[0];
+        }
+
+        private static void GetAudioClip(string fileName, List<AudioClip> audioClips)
+        {
+            var clipPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "sounds", fileName + ".wav");
+            var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV);
+
+            webRequest.SendWebRequest();
+
+            while (!webRequest.isDone)
+                _ = 0;
+
+            if (webRequest.isNetworkError)
+            {
+                Debug.Log(webRequest.error);
+            }
+            else
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+                clip.name = fileName;
+                audioClips.Add(clip);
+            }
+        }
+
+        private static void LoadFishBadges()
         {
             var fishBadgesPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "badges", "fish");
             int[] amountNums = { 25, 50, 100 };
@@ -46,7 +80,7 @@ namespace sailadex
             Plugin.logger.LogInfo("Fishing badges loaded.");
         }
 
-        public static void LoadPortBadges()
+        private static void LoadPortBadges()
         {
             var portBadgesPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "badges", "ports");
             Texture2D tempTexture;
@@ -83,36 +117,6 @@ namespace sailadex
             material.EnableKeyword("_ALPHATEST_ON");
             material.SetShaderPassEnabled("ShadowCaster", false);
             return material;
-        }
-
-        public static void GetAudioClip(string fileName, List<AudioClip> audioClips)
-        {
-            var clipPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "sounds", fileName + ".wav");
-            var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV);
-
-            webRequest.SendWebRequest();
-
-            while (!webRequest.isDone)
-                _ = 0;
-
-            if (webRequest.isNetworkError)
-            {
-                Debug.Log(webRequest.error);
-            }
-            else
-            {
-                AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-                clip.name = fileName;
-                audioClips.Add(clip);
-            }
-        }
-
-        public static void LoadAudio()
-        {
-            List<AudioClip> audioClips = new List<AudioClip>();
-            GetAudioClip("twoBells", audioClips);
-            Debug.Log($"AudioClips length {audioClips.Count}");
-            notificationSound = audioClips[0];
-        }       
+        }                     
     }
 }

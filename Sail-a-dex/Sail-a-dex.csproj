@@ -81,11 +81,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compatability\PassageDude.cs" />
-    <Compile Include="Compatability\RandomEncounters.cs" />
+    <Compile Include="Compatibility\PassageDude.cs" />
+    <Compile Include="Compatibility\RandomEncounters.cs" />
     <Compile Include="Patches\EventPatches.cs" />
     <Compile Include="UILogic\FishCaughtUI.cs" />
     <Compile Include="Patches\LogUIPatches.cs" />
+    <Compile Include="UI\UIBuilder.cs" />
     <Compile Include="Utilities\AssetsLoader.cs" />
     <Compile Include="Utilities\Helper.cs" />
     <Compile Include="Utilities\Names.cs" />
@@ -101,10 +102,12 @@
   <Import Project="$(SolutionDir)Sail-a-dex.VS.props" />
   <ItemGroup>
     <_CopyItemsAssets Include="$(SolutionDir)\assets\**\*.*" />
+    <_CopyItemsAbout Include="$(SolutionDir)\About\**\*.*" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <RemoveDir Directories="$(BepInExPluginsDirectory)\$(ModName)" />
     <Copy SourceFiles="$(ProjectDir)\bin\Debug\$(ModName).dll" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)" ContinueOnError="true" />
     <Copy SourceFiles="@(_CopyItemsAssets)" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)\assets\%(RecursiveDir)" ContinueOnError="true" />
+    <Copy SourceFiles="@(_CopyItemsAbout)" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)\About\%(RecursiveDir)" ContinueOnError="true" />
   </Target>
 </Project>

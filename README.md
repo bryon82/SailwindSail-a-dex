@@ -51,7 +51,6 @@ Notifications will pop up along with a ship bell sound on badges earned and fast
 * Notification sound can be adjusted and disabled.
 * By default Miles sailied text is updated once moored at a port, this can be changed to be updated also when going to sleep or in real time.
 * All Logs can be disabled individually.
-  **WARNING**: Disabling a previously enabled log and then saving the game will erase all previously saved log progress.
 
 ## Installation
 

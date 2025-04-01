@@ -16,45 +16,35 @@ namespace sailadex
             [HarmonyPatch("SaveModData")]
             public static void DoSaveGamePatch()
             {
-                //var saveContainer = new LogUIPatches.RaddudeSaveContainer();
                 var saveContainer = new SailadexSaveContainer();
+               
+                saveContainer.caughtFish = FishCaughtUI.instance.caughtFish.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
 
-                if (Plugin.fishCaughtUIEnabled.Value)
-                {
-                    saveContainer.caughtFish = FishCaughtUI.instance.caughtFish.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
+                saveContainer.fishBadges = FishCaughtUI.instance.fishBadges.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
+                
+                saveContainer.visitedPorts = PortsVisitedUI.instance.visitedPorts.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
 
-                    saveContainer.fishBadges = FishCaughtUI.instance.fishBadges.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
-                }
+                saveContainer.portBadges = PortsVisitedUI.instance.portBadges.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
+               
+                saveContainer.floatStats = StatsUI.instance.floatStats.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
 
-                if (Plugin.portsVisitedUIEnabled.Value)
-                {
-                    saveContainer.visitedPorts = PortsVisitedUI.instance.visitedPorts.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
+                saveContainer.intStats = StatsUI.instance.intStats.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);
 
-                    saveContainer.portBadges = PortsVisitedUI.instance.portBadges.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
-                }
-
-                if (Plugin.statsUIEnabled.Value)
-                {
-                    saveContainer.floatStats = StatsUI.instance.floatStats.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
-
-                    saveContainer.intStats = StatsUI.instance.intStats.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
-
-                    saveContainer.boolArrayStats = StatsUI.instance.boolArrayStats.ToDictionary(
-                        entry => entry.Key,
-                        entry => entry.Value);
-                }
+                saveContainer.boolArrayStats = StatsUI.instance.boolArrayStats.ToDictionary(
+                    entry => entry.Key,
+                    entry => entry.Value);                
 
                 ModSave.Save(Plugin.instance.Info, saveContainer);
             }
@@ -69,76 +59,67 @@ namespace sailadex
                     return;                                                                          
                 }
 
-                if (Plugin.fishCaughtUIEnabled.Value)
+                if (saveContainer.caughtFish != null)
                 {
-                    if (saveContainer.caughtFish != null)
-                    {
-                        //LoadDictionary(saveContainer.caughtFish, FishCaughtUI.instance.caughtFish);
-                        ConvertFishNames(saveContainer.caughtFish, FishCaughtUI.instance.caughtFish);
-                    }
-
-                    if (saveContainer.fishBadges != null)
-                    {
-                        LoadDictionary(saveContainer.fishBadges, FishCaughtUI.instance.fishBadges);
-                    }
+                    //LoadDictionary(saveContainer.caughtFish, FishCaughtUI.instance.caughtFish);
+                    ConvertFishNames(saveContainer.caughtFish, FishCaughtUI.instance.caughtFish);
                 }
 
-                if (Plugin.portsVisitedUIEnabled.Value)
+                if (saveContainer.fishBadges != null)
                 {
-                    if (saveContainer.visitedPorts != null)
-                    {
-                        LoadDictionary(saveContainer.visitedPorts, PortsVisitedUI.instance.visitedPorts);
-                    }
+                    LoadDictionary(saveContainer.fishBadges, FishCaughtUI.instance.fishBadges);
+                }                
 
-                    if (saveContainer.portBadges != null)
-                    {
-                        LoadDictionary(saveContainer.portBadges, PortsVisitedUI.instance.portBadges);
-                    }
+                if (saveContainer.visitedPorts != null)
+                {
+                    LoadDictionary(saveContainer.visitedPorts, PortsVisitedUI.instance.visitedPorts);
                 }
 
-                if (Plugin.statsUIEnabled.Value)
+                if (saveContainer.portBadges != null)
                 {
-                    if (saveContainer.floatStats != null)
+                    LoadDictionary(saveContainer.portBadges, PortsVisitedUI.instance.portBadges);
+                }                
+
+                if (saveContainer.floatStats != null)
+                {
+                    // TODO: remove in next major version
+                    if (saveContainer.floatStats.ContainsKey("recordGrcDcTransitTime"))
                     {
-                        // TODO: remove in next major version
-                        if (saveContainer.floatStats.ContainsKey("recordGrcDcTransitTime"))
-                        {
-                            ConvertTransitFloats(saveContainer.floatStats);
-                        }
+                        ConvertTransitFloats(saveContainer.floatStats);
+                    }
                         
-                        LoadDictionary(saveContainer.floatStats, StatsUI.instance.floatStats);                       
-                    }
-
-                    if (saveContainer.intStats != null)
-                    {
-                        // TODO: remove in next major version
-                        if (saveContainer.intStats.ContainsKey("recordGrcDcTransitDay"))
-                        {
-                            ConvertTransitInts(saveContainer.intStats);
-                        }
-
-                        LoadDictionary(saveContainer.intStats, StatsUI.instance.intStats);
-                    }
-
-                    if (saveContainer.boolArrayStats != null)
-                    {
-                        // TODO: remove in next major version
-                        if (saveContainer.boolArrayStats.ContainsKey("grcTransit"))
-                        {
-                            ConvertTransitBools(saveContainer.boolArrayStats);
-                        }
-
-                        foreach (KeyValuePair<string, bool[]> item in saveContainer.boolArrayStats)
-                        {
-                            if (StatsUI.instance.boolArrayStats.ContainsKey(item.Key))
-                            {
-                                StatsUI.instance.boolArrayStats[item.Key] = (bool[])item.Value.Clone();
-                                continue;
-                            }
-                            Plugin.logger.LogWarning($"LoadData: {item.Key} not found in game");
-                        }
-                    }
+                    LoadDictionary(saveContainer.floatStats, StatsUI.instance.floatStats);                       
                 }
+
+                if (saveContainer.intStats != null)
+                {
+                    // TODO: remove in next major version
+                    if (saveContainer.intStats.ContainsKey("recordGrcDcTransitDay"))
+                    {
+                        ConvertTransitInts(saveContainer.intStats);
+                    }
+
+                    LoadDictionary(saveContainer.intStats, StatsUI.instance.intStats);
+                }
+
+                if (saveContainer.boolArrayStats != null)
+                {
+                    // TODO: remove in next major version
+                    if (saveContainer.boolArrayStats.ContainsKey("grcTransit"))
+                    {
+                        ConvertTransitBools(saveContainer.boolArrayStats);
+                    }
+
+                    foreach (KeyValuePair<string, bool[]> item in saveContainer.boolArrayStats)
+                    {
+                        if (StatsUI.instance.boolArrayStats.ContainsKey(item.Key))
+                        {
+                            StatsUI.instance.boolArrayStats[item.Key] = (bool[])item.Value.Clone();
+                            continue;
+                        }
+                        Plugin.logger.LogWarning($"LoadData: {item.Key} not found in game");
+                    }
+                }                
             }  
             
             public static void LoadDictionary<T>(Dictionary<string, T> saveDict, Dictionary<string, T> gameDict)

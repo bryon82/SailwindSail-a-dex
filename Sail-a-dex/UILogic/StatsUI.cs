@@ -402,6 +402,7 @@ namespace sailadex
             lastStorm = "";
         }
 
+        //Testing
         //public void Update()
         //{
         //    if (Input.GetKeyDown(KeyCode.P))
