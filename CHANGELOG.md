@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 - MVC support
 
 ### Changed
-- The way enabling/disabling the different logs works. You can now disable a log and save the game without it erasing your progress in the log.
+- The way enabling/disabling logs works. You can now disable a log and save the game without it erasing your progress in the log.
 
 ## [v1.4.4] - 2025-03-23
 
