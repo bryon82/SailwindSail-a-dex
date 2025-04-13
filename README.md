@@ -49,10 +49,16 @@ Notifications will pop up along with a ship bell sound on badges earned and fast
 * By default port names are visible, can be configured to be hidden until visited for the first time.
 * Notifications can be disabled.
 * Notification sound can be adjusted and disabled.
-* By default Miles sailied text is updated once moored at a port, this can be changed to be updated also when going to sleep or in real time.
+* By default Miles sailed text is updated once moored at a port, this can be changed to be updated also when going to sleep or in real time.
 * All Logs can be disabled individually.
 
 ## Installation
 
 Place the Sail-a-dex folder (not the contents, the whole thing) into the Sailwind/BepInEx/Plugins folder.  
 If upgrading from v1.0.0 delete the old Sail-a-dex.dll from the BepInEx/plugins folder first.  
+
+
+#### Consider supporting me 🤗
+
+<a href='https://www.paypal.com/donate/?business=WKY25BB3TSH6E&no_recurring=0&item_name=Thank+you+for+your+support%21+I%27m+glad+you+are+enjoying+my+mods%21&currency_code=USD' target='_blank'><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" alt="Donate with PayPal button" />
+<a href='https://ko-fi.com/S6S11DDLMC' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>

@@ -111,8 +111,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Ports visited bookmark will now shift left if fish caught UI is disabled.
-- Refactored code to have external objects only accessed once instead of everytime needed.
-- UI have had badge locations added, fish caught UI text was shifted to accomodate space for badges.
+- Refactored code to have external objects only accessed once instead of every time needed.
+- UI have had badge locations added, fish caught UI text was shifted to accommodate space for badges.
 
 ## [v1.0.0] - 2024-08-09
 

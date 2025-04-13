@@ -102,12 +102,10 @@
   <Import Project="$(SolutionDir)Sail-a-dex.VS.props" />
   <ItemGroup>
     <_CopyItemsAssets Include="$(SolutionDir)\assets\**\*.*" />
-    <_CopyItemsAbout Include="$(SolutionDir)\About\**\*.*" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <RemoveDir Directories="$(BepInExPluginsDirectory)\$(ModName)" />
     <Copy SourceFiles="$(ProjectDir)\bin\Debug\$(ModName).dll" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)" ContinueOnError="true" />
     <Copy SourceFiles="@(_CopyItemsAssets)" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)\assets\%(RecursiveDir)" ContinueOnError="true" />
-    <Copy SourceFiles="@(_CopyItemsAbout)" DestinationFolder="$(BepInExPluginsDirectory)\$(ModName)\About\%(RecursiveDir)" ContinueOnError="true" />
   </Target>
 </Project>
