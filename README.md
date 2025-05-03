@@ -29,13 +29,13 @@ Access this log by selecting the "ports visited" bookmark in the log.
 A UI showing various stats and transit times between regions.  
 Cargo mass is is the mass some of all crates, barrels, and packages.  
 Cargo mass stat "Record" will be recorded once you unmoor from the dock.  
-Total mass stat is the total mass of the ship and operates the same as cargo mass  
+Total mass stat is the total mass of the ship and operates the same as cargo mass.  
 Underway "Record" is the longest time you are out at sea before pulling into port.  
 Transit time "Record" is the fastest time you made a transit.  
 The starting time for transits are tracked from the last island you were moored at from a region that you leave. This time will be used for when you moor at any island in other regions. Happy Bay is ignored for calculating fastest transits.  
 (only the first time mooring at a city in another region will be recorded, i.e. You leave Gold Rock City, only the first time reaching Crab Beach will the AA to EA transit be recorded).  
 If you use PassageDude mod and book travel or teleport via console that will reset your currently tracked transits.  
-If you have RandomEncounters installed, Flotsam encounters and Dense Fog encounters if enabled will be tracked if.  
+If you have RandomEncounters installed: Flotsam, Dense Fog, Fishing Bonanza, and Intense Storm encounters will be tracked if they are enabled in RE.  
 If you have the SeaLifeMod installed and controlled through RandomEncounters, the SeaLife encounters will be tracked as well.  
 
 ## Notifications
@@ -54,9 +54,9 @@ Notifications will pop up along with a ship bell sound on badges earned and fast
 
 ## Installation
 
-Place the Sail-a-dex folder (not the contents, the whole thing) into the Sailwind/BepInEx/Plugins folder.  
-If upgrading from v1.0.0 delete the old Sail-a-dex.dll from the BepInEx/plugins folder first.  
+If updating, remove Sail-a-dex folders and/or Sail-a-dex.dll files from previous installations.  
 
+Extract the downloaded zip. Inside the extracted Sail-a-dex-\<version\> folder copy the Sail-a-dex folder and paste it into the Sailwind/BepInEx/Plugins folder.  
 
 #### Consider supporting me 🤗
 

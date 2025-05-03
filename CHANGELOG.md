@@ -2,10 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v1.4.5] - 2025-04-01
+## [v1.5.0] - 2025-05-03
+
+### Updated
+- Major refactor of StatsUI and PortsVisitedUI logic.
+- Improve encapsulation overall.
 
 ### Added
-- MVC support
+- Intense storm and fishing bonanza to StatsUI.
+- Dynamic add-remove of RandomEncounter stats.
+
+### Changed
+- Plugin name case to match mod name.
+
+## [v1.4.5] - 2025-04-01
 
 ### Changed
 - The way enabling/disabling logs works. You can now disable a log and save the game without it erasing your progress in the log.
