@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BepInEx.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,39 +7,55 @@ namespace sailadex
 {
     public class PortsVisitedUI : MonoBehaviour
     {
-        public static PortsVisitedUI instance;
-        public Dictionary<string, bool> visitedPorts;        
-        public TextMesh[] portNameTMs;
-        public TextMesh[] portVisitedTMs;
-        public Dictionary<string, bool> portBadges;
-        public Dictionary<string, GameObject> portBadgeGOs;
+        public static PortsVisitedUI Instance { get; private set; }
+        private static readonly ManualLogSource logger = SAD_Plugin.logger;
 
+        private TextMesh[] _portNameTMs;
+        private TextMesh[] _portVisitedTMs;
+        private Dictionary<string, GameObject> _portBadgeGOs;
+        private Dictionary<string, bool> _visitedPorts;
+        private Dictionary<string, bool> _portBadges;
+
+        public IReadOnlyDictionary<string, bool> VisitedPorts => _visitedPorts;
+        public IReadOnlyDictionary<string, bool> PortBadges => _portBadges;        
+                
         private void Awake()
         {
-            instance = this;
-            visitedPorts = new Dictionary<string, bool>();
-            portBadges = new Dictionary<string, bool>();
-            portBadgeGOs = new Dictionary<string, GameObject>();
-            
-            foreach (string port in Names.portNames)
+            if (Instance != null && Instance != this)
             {
-                visitedPorts.Add(port, false);
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
+            _visitedPorts = new Dictionary<string, bool>();
+            foreach (string port in Region.AllPorts)
+            {
+                _visitedPorts[port] = false;
             }
 
-            foreach (string portBadge in Names.portBadgeNames) 
-            { 
-                portBadges.Add(portBadge, false);
+            _portBadges = new Dictionary<string, bool>();
+            foreach (string portBadge in Region.AllBadgeNames)
+            {
+                _portBadges[portBadge] = false;
             }
         }
 
         public void RegisterVisit(string portName)
         {
-            if (visitedPorts.ContainsKey(portName) && !visitedPorts[portName])
-            {                   
-                visitedPorts[portName] = true;
+            if (!_visitedPorts.ContainsKey(portName))
+            {
+                logger.LogWarning($"Attempted to register visit to unknown port: {portName}");
+                return;
+            }
+
+            if (!_visitedPorts[portName])
+            {
+                _visitedPorts[portName] = true;
                 CheckBadges();
             }
-            Plugin.logger.LogDebug("Visited: " + portName);
+
+            logger.LogDebug($"Visited: {portName}");
         }
 
         public void UpdatePage()
@@ -50,62 +67,84 @@ namespace sailadex
         private void UpdateTexts()
         {
             int i = 0;
-            foreach (KeyValuePair<string, bool> port in visitedPorts)
+            foreach (KeyValuePair<string, bool> port in _visitedPorts)
             {
-                if (Plugin.portNamesHidden.Value)
-                    portNameTMs[i].text = port.Value ? port.Key : "???";
-                else
-                    portNameTMs[i].text = port.Key;
-                portVisitedTMs[i].text = port.Value ? "✓" : "✗";
+                if (i >= _portNameTMs.Length || i >= _portVisitedTMs.Length)
+                {
+                    logger.LogWarning("Not enough TextMesh objects to display all ports");
+                    break;
+                }
+
+                _portNameTMs[i].text = GetPortDisplayName(port.Key, port.Value);
+                _portVisitedTMs[i].text = port.Value ? "✓" : "✗";
                 i++;
             }
         }
-        
-        public void CheckBadges()
-        {            
-            var alankhBadge = Names.alankhPorts.All(p => visitedPorts[p]);
-            var emeraldBadge = Names.emeraldPorts.All(p => visitedPorts[p]);
-            var mediBadge = Names.mediPorts.All(p => visitedPorts[p]);
-            var lagoonBadge = Names.lagoonPorts.All(p => visitedPorts[p]);
 
-            if (!portBadges["alankhBadge"] && alankhBadge)
+        private string GetPortDisplayName(string portName, bool visited)
+        {
+            return SAD_Plugin.portNamesHidden.Value && !visited ? "???" : portName;
+        }
+
+        public void CheckBadges()
+        {
+            foreach (var region in Region.AllRegions)
             {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification("Visited all Al'Ankh ports");
-                portBadges["alankhBadge"] = true;
+                if (!_portBadges[region.BadgeName] && region.Ports.All(p => _visitedPorts[p]))
+                {
+                    _portBadges[region.BadgeName] = true;
+                    ShowBadgeNotification(region.Name);
+                }
             }
-            if (!portBadges["emeraldBadge"] && emeraldBadge)
+
+            if (!_portBadges["allPortsBadge"] && Region.AllPorts.All(p => _visitedPorts[p]))
             {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification("Visited all Emerald\nArchipelago ports");
-                portBadges["emeraldBadge"] = true;
+                _portBadges["allPortsBadge"] = true;
+                ShowBadgeNotification("all");
             }
-            if (!portBadges["mediBadge"] && mediBadge)
-            {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification("Visited all Aestrin ports");
-                portBadges["mediBadge"] = true;
-            }
-            if (!portBadges["lagoonBadge"] && lagoonBadge)
-            {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification("Visited all Fire\nFish Lagoon ports");
-                portBadges["lagoonBadge"] = true;
-            }
-            if (!portBadges["allPortsBadge"] && alankhBadge && emeraldBadge && mediBadge && lagoonBadge)
-            {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification("Visited all ports");
-                portBadges["allPortsBadge"] = true;
-            }           
+        }
+
+        private void ShowBadgeNotification(string region)
+        {
+            if (!SAD_Plugin.notificationsEnabled.Value)
+                return;
+
+            string message = name != "all"
+                ? $"Visited all {region} ports"
+                : $"Visited all ports";
+
+            NotificationUiQueue.Instance.QueueNotification(message);
         }
 
         public void UpdateBadges()
         {
-            foreach (KeyValuePair<string, bool> badge in portBadges)
-            {            
-                portBadgeGOs[badge.Key].SetActive(badge.Value);                
+            foreach (KeyValuePair<string, bool> badge in _portBadges)
+            {
+                if (!_portBadgeGOs.ContainsKey(badge.Key))
+                {
+                    logger.LogWarning($"Missing GameObject for badge: {badge.Key}");
+                    continue;
+                }
+
+                _portBadgeGOs[badge.Key].SetActive(badge.Value);
             }
         }
+        
+        public void SetUIElems(TextMesh[] portNameTMs, TextMesh[] portVisitedTMs, Dictionary<string, GameObject> portBadgeGOs)
+        {
+            _portNameTMs = portNameTMs;
+            _portVisitedTMs = portVisitedTMs;
+            _portBadgeGOs = portBadgeGOs;
+        }
+
+        public void LoadVisitedPorts(Dictionary<string, bool> visitedPorts)
+        {
+            SaveLoadPatches.LoadDictionary(visitedPorts, _visitedPorts);
+        }
+
+        public void LoadPortBadges(Dictionary<string, bool> portBadges)
+        {
+            SaveLoadPatches.LoadDictionary(portBadges, _portBadges);
+        }        
     }
 }

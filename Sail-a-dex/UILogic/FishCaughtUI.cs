@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BepInEx.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -6,45 +7,86 @@ namespace sailadex
 {
     public class FishCaughtUI : MonoBehaviour
     {
-        public static FishCaughtUI instance;
-        public Dictionary<string, int> caughtFish;
-        public TextMesh[] fishNameTMs;
-        public TextMesh[] caughtCountTMs;
-        public Dictionary<string, bool> fishBadges;
-        public Dictionary<string, GameObject> fishBadgeGOs;
+        public static FishCaughtUI Instance { get; private set; }
+        static readonly ManualLogSource logger = SAD_Plugin.logger;
+
+        public TextMesh[] _fishNameTMs;
+        public TextMesh[] _caughtCountTMs;
+        public Dictionary<string, GameObject> _fishBadgeGOs;
+
+        public Dictionary<string, int> _caughtFish;        
+        public Dictionary<string, bool> _fishBadges;
+
+        private static readonly int[] FISH_BADGE_AMOUNTS = { 25, 50, 100 };
+        private static readonly int[] TOTAL_FISH_BADGE_AMOUNTS = { 50, 250, 500 };
+
+        public static readonly string[] FishNames =
+        {
+            "templefish",
+            "sunspot fish",
+            "tuna",
+            "shimmertail",
+            "salmon",
+            "eel",
+            "blackfin hunter",
+            "trout",
+            "north fish",
+            "swamp snapper",
+            "blue bubbler",
+            "fire fish"
+        };
+
+        public static readonly string[] TotalFishBadgeNames =
+        {
+            "caught50",
+            "caught250",
+            "caught500",
+            "caughtAll"
+        };
+
+        public IReadOnlyDictionary<string, int> CaughtFish => _caughtFish;
+        public IReadOnlyDictionary<string, bool> FishBadges => _fishBadges;
 
         private void Awake()
         {
-            instance = this;
-            caughtFish = new Dictionary<string, int>();
-            fishBadges = new Dictionary<string, bool>();
-            fishBadgeGOs = new Dictionary<string, GameObject>();
-
-            foreach (string fishName in Names.fishNames)
+            if (Instance != null && Instance != this)
             {
-                caughtFish.Add(fishName, 0);
-                fishBadges.Add(fishName + "25", false);
-                fishBadges.Add(fishName + "50", false);
-                fishBadges.Add(fishName + "100", false);
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+
+            _caughtFish = new Dictionary<string, int>();
+            _fishBadges = new Dictionary<string, bool>();
+            _fishBadgeGOs = new Dictionary<string, GameObject>();
+
+            foreach (string fishName in FishNames)
+            {
+                _caughtFish.Add(fishName, 0);
+
+                foreach (int amt in FISH_BADGE_AMOUNTS)
+                {
+                    _fishBadges.Add($"{fishName}{amt}", false);
+                }
             }
 
-            foreach (string badgeName in Names.totalFishBadgeNames) 
+            foreach (string badgeName in TotalFishBadgeNames) 
             {
-                fishBadges.Add(badgeName, false);
+                _fishBadges.Add(badgeName, false);
             }
         }
 
         public void RegisterCatch(GameObject fish)
         {
             var fishName = fish.GetComponent<ShipItemFood>().name;
-            if (!caughtFish.ContainsKey(fishName))
+            if (!_caughtFish.ContainsKey(fishName))
             {
-                Plugin.logger.LogWarning($"Fish caught {fishName} is not in fish caught log");
+                logger.LogWarning($"Fish caught {fishName} is not in fish caught log");
                 return;
             }
-            caughtFish[fishName]++;
+            _caughtFish[fishName]++;
             CheckBadges(fishName);
-            Plugin.logger.LogDebug("Caught: " + fishName);
+            logger.LogDebug($"Caught: {fishName}");
         }
 
         public void UpdatePage()
@@ -57,18 +99,18 @@ namespace sailadex
         {
             int i = 0;
             int catchSum = 0;
-            foreach (KeyValuePair<string, int> fish in caughtFish)
+            foreach (KeyValuePair<string, int> fish in _caughtFish)
             {
-                if (Plugin.fishNamesHidden.Value)
-                    fishNameTMs[i].text = fish.Value > 0 ? fish.Key : "???";
+                if (SAD_Plugin.fishNamesHidden.Value)
+                    _fishNameTMs[i].text = fish.Value > 0 ? fish.Key : "???";
                 else
-                    fishNameTMs[i].text = fish.Key;
-                caughtCountTMs[i].text = fish.Value.ToString();
+                    _fishNameTMs[i].text = fish.Key;
+                _caughtCountTMs[i].text = fish.Value.ToString();
                 catchSum += fish.Value;
                 i++;
             }
-            fishNameTMs[fishNameTMs.Length - 1].text = "Total";
-            caughtCountTMs[caughtCountTMs.Length - 1].text = "" + catchSum;
+            _fishNameTMs[_fishNameTMs.Length - 1].text = "Total";
+            _caughtCountTMs[_caughtCountTMs.Length - 1].text = $"{catchSum}";
         }
 
         public void CheckBadges(string fishName)
@@ -79,46 +121,61 @@ namespace sailadex
 
         public void CheckIndividualFishBadges(string fishName)
         {
-            int[] amts = { 25, 50, 100 };
-            foreach (int amt in amts)
+            foreach (int amt in FISH_BADGE_AMOUNTS)
             {
-                if (!fishBadges[fishName + "" + amt] && caughtFish[fishName] >= amt)
+                if (!_fishBadges[$"{fishName}{amt}"] && _caughtFish[fishName] >= amt)
                 {
-                    if (Plugin.notificationsEnabled.Value)
-                        NotificationUiQueue.instance.QueueNotification($"Caught {amt} {fishName}");
-                    fishBadges[fishName + "" + amt] = true;
+                    if (SAD_Plugin.notificationsEnabled.Value)
+                        NotificationUiQueue.Instance.QueueNotification($"Caught {amt} {fishName}");
+                    _fishBadges[$"{fishName}{amt}"] = true;
                 }
             }
         }
 
         public void CheckAllFishBadges()
         {
-            var catchSum = caughtFish.Values.Sum();
-            int[] amts = { 50, 250, 500 };
-            for (int i = 0; i < amts.Length; i++) 
+            var catchSum = _caughtFish.Values.Sum();
+            for (int i = 0; i < TOTAL_FISH_BADGE_AMOUNTS.Length; i++) 
             {
-                if (!fishBadges[Names.totalFishBadgeNames[i]] && catchSum >= amts[i])
+                if (!_fishBadges[TotalFishBadgeNames[i]] && catchSum >= TOTAL_FISH_BADGE_AMOUNTS[i])
                 {
-                    if (Plugin.notificationsEnabled.Value)
-                        NotificationUiQueue.instance.QueueNotification($"Caught {amts[i]} fish");
-                    fishBadges[Names.totalFishBadgeNames[i]] = true;
+                    if (SAD_Plugin.notificationsEnabled.Value)
+                        NotificationUiQueue.Instance.QueueNotification($"Caught {TOTAL_FISH_BADGE_AMOUNTS[i]} fish");
+                    _fishBadges[TotalFishBadgeNames[i]] = true;
                 }
             }
 
-            if (!fishBadges[Names.totalFishBadgeNames[3]] && !caughtFish.Values.Where(v => v.Equals(0)).Any())
+            if (!_fishBadges[TotalFishBadgeNames[3]] && !_caughtFish.Values.Any(v => v.Equals(0)))
             {
-                if (Plugin.notificationsEnabled.Value)
-                    NotificationUiQueue.instance.QueueNotification($"Caught all fish");
-                fishBadges[Names.totalFishBadgeNames[3]] = true;
+                if (SAD_Plugin.notificationsEnabled.Value)
+                    NotificationUiQueue.Instance.QueueNotification($"Caught all fish");
+                _fishBadges[TotalFishBadgeNames[3]] = true;
             }
         }
 
         private void UpdateBadges()
         {
-            foreach (KeyValuePair<string, bool> badge in fishBadges)
+            foreach (KeyValuePair<string, bool> badge in _fishBadges)
             {
-                fishBadgeGOs[badge.Key].SetActive(badge.Value);
+                _fishBadgeGOs[badge.Key].SetActive(badge.Value);
             }
+        }
+
+        public void SetUIElems(TextMesh[] fishNameTMs, TextMesh[] caughtCountTMs, Dictionary<string, GameObject> fishBadgeGOs)
+        {
+            _fishNameTMs = fishNameTMs;
+            _caughtCountTMs = caughtCountTMs;
+            _fishBadgeGOs = fishBadgeGOs;
+        }
+
+        public void LoadCaughtFish(Dictionary<string, int> caughtFish)
+        {
+            SaveLoadPatches.LoadDictionary(caughtFish, _caughtFish);
+        }
+
+        public void LoadFishBadges(Dictionary<string, bool> fishBadges)
+        {
+            SaveLoadPatches.LoadDictionary(fishBadges, _fishBadges);
         }
     }
 }

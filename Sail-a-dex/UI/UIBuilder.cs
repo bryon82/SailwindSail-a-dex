@@ -1,55 +1,69 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Logging;
+using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace sailadex
 {
     internal class UIBuilder
     {
+        private static readonly ManualLogSource logger = SAD_Plugin.logger;
+
         internal const MissionListMode fishCaught = (MissionListMode)5;
         internal const MissionListMode portsVisited = (MissionListMode)6;
         internal const MissionListMode stats = (MissionListMode)7;
 
+        private const int FISH_CAUGHT_FONT_SIZE = 50;
+        private const int STAT_HEADER_FONT_SIZE = 45;
+        private const int STAT_FONT_SIZE = 40;
+
+        #region bookmarks
+
         internal static List<GameObject> MakeBookmarks(GameObject modeButtons)
         {
             var bookmarks = new List<GameObject>();
-            GameObject bookmarkReceipts = modeButtons.transform.GetChild(9).gameObject;
+            var bookmarkReceipts = modeButtons.transform.GetChild(9).gameObject;
 
-            GameObject bookmarkFishCaught = GameObject.Instantiate(bookmarkReceipts);
+            var bookmarkFishCaught = GameObject.Instantiate(bookmarkReceipts);
             bookmarkFishCaught.transform.parent = modeButtons.transform;
             bookmarkFishCaught.transform.localRotation = bookmarkReceipts.transform.localRotation;
             bookmarkFishCaught.transform.localScale = bookmarkReceipts.transform.localScale;
             bookmarkFishCaught.name = "bookmark fish caught";
             bookmarkFishCaught.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "fish caught";
-            GPButtonLogMode fcGPButtonLogMode = bookmarkFishCaught.GetComponent<GPButtonLogMode>();
+            var fcGPButtonLogMode = bookmarkFishCaught.GetComponent<GPButtonLogMode>();
             Traverse.Create(fcGPButtonLogMode).Field("mode").SetValue(fishCaught);
             Object.Destroy(bookmarkFishCaught.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkFishCaught);
 
-            GameObject bookmarkPortsVisited = GameObject.Instantiate(bookmarkReceipts);
+            var bookmarkPortsVisited = GameObject.Instantiate(bookmarkReceipts);
             bookmarkPortsVisited.transform.parent = modeButtons.transform;
             bookmarkPortsVisited.transform.localRotation = bookmarkReceipts.transform.localRotation;
             bookmarkPortsVisited.transform.localScale = bookmarkReceipts.transform.localScale;
             bookmarkPortsVisited.name = "bookmark ports visited";
             bookmarkPortsVisited.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "ports visited";
-            GPButtonLogMode pvGPButtonLogMode = bookmarkPortsVisited.GetComponent<GPButtonLogMode>();
+            var pvGPButtonLogMode = bookmarkPortsVisited.GetComponent<GPButtonLogMode>();
             Traverse.Create(pvGPButtonLogMode).Field("mode").SetValue(portsVisited);
             Object.Destroy(bookmarkPortsVisited.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkPortsVisited);
 
-            GameObject bookmarkStats = GameObject.Instantiate(bookmarkReceipts);
+            var bookmarkStats = GameObject.Instantiate(bookmarkReceipts);
             bookmarkStats.transform.parent = modeButtons.transform;
             bookmarkStats.transform.localRotation = bookmarkReceipts.transform.localRotation;
             bookmarkStats.transform.localScale = bookmarkReceipts.transform.localScale;
             bookmarkStats.name = "bookmark stats";
             bookmarkStats.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "stats & transit";
-            GPButtonLogMode sGPButtonLogMode = bookmarkStats.GetComponent<GPButtonLogMode>();
+            var sGPButtonLogMode = bookmarkStats.GetComponent<GPButtonLogMode>();
             Traverse.Create(sGPButtonLogMode).Field("mode").SetValue(stats);
             Object.Destroy(bookmarkStats.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkStats);
 
             return bookmarks;
         }
+
+        #endregion
+
+        #region FishCaughtUI
 
         internal static GameObject MakeFishCaughtUI(GameObject repUI)
         {
@@ -64,24 +78,26 @@ namespace sailadex
             Object.Destroy(fishCaughtUI.transform.GetChild(1).gameObject);
             fishCaughtUI.AddComponent<FishCaughtUI>();
 
-            GameObject fishCaughtTextGO = fishCaughtUI.transform.GetChild(0).gameObject;
+            var fishCaughtTextGO = fishCaughtUI.transform.GetChild(0).gameObject;
             fishCaughtTextGO.GetComponent<TextMesh>().font = fishCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
             fishCaughtTextGO.GetComponent<MeshRenderer>().material = fishCaughtTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             fishCaughtTextGO.transform.GetChild(1).gameObject.name = "caught count";
             fishCaughtTextGO.transform.GetChild(1).localPosition = new Vector3(55f, 0f, fishCaughtTextGO.transform.GetChild(1).localPosition[2]);
-            fishCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontSize = 50;
-            TextMesh[] caughtCountTexts = new TextMesh[Names.fishNames.Length + 1];
-            TextMesh[] fishnameTexts = new TextMesh[Names.fishNames.Length + 1];
+            fishCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontSize = FISH_CAUGHT_FONT_SIZE;
+            
+            var caughtCountTexts = new TextMesh[FishCaughtUI.FishNames.Length + 1];
+            var fishnameTexts = new TextMesh[FishCaughtUI.FishNames.Length + 1];
+            var badgeGOs = new Dictionary<string, GameObject>();
 
-            for (int i = 0; i < Names.fishNames.Length; i++)
+            for (int i = 0; i < FishCaughtUI.FishNames.Length; i++)
             {
-                GameObject newFishCaughtTextGO = GameObject.Instantiate(fishCaughtTextGO);
+                var newFishCaughtTextGO = GameObject.Instantiate(fishCaughtTextGO);
                 Object.Destroy(newFishCaughtTextGO.transform.GetChild(4).gameObject);
                 Object.Destroy(newFishCaughtTextGO.transform.GetChild(3).gameObject);
                 Object.Destroy(newFishCaughtTextGO.transform.GetChild(2).gameObject);
                 Object.Destroy(newFishCaughtTextGO.transform.GetChild(0).gameObject);
-                newFishCaughtTextGO.GetComponent<TextMesh>().fontSize = 50;
-                newFishCaughtTextGO.name = Names.fishNames[i];
+                newFishCaughtTextGO.GetComponent<TextMesh>().fontSize = FISH_CAUGHT_FONT_SIZE;
+                newFishCaughtTextGO.name = FishCaughtUI.FishNames[i];
                 newFishCaughtTextGO.transform.parent = fishCaughtTextGO.transform.parent;
                 newFishCaughtTextGO.transform.localPosition = new Vector3(0.8f, 0.24f - 0.0375f * i, fishCaughtTextGO.transform.localPosition[2]);
                 newFishCaughtTextGO.transform.localRotation = fishCaughtTextGO.transform.localRotation;
@@ -95,11 +111,11 @@ namespace sailadex
                 {
                     var badgeName = newFishCaughtTextGO.name + badgeNums[j];
                     var badge = CreateBadgeObject(badgeName, newFishCaughtTextGO.transform, new Vector3(12f, 12f, 1f), new Vector3(75f + j * 13f, 0f, 0f));
-                    FishCaughtUI.instance.fishBadgeGOs.Add(badgeName, badge);
+                    badgeGOs.Add(badgeName, badge);
                 }
             }
 
-            GameObject totalCaughtTextGO = GameObject.Instantiate(fishCaughtTextGO);
+            var totalCaughtTextGO = GameObject.Instantiate(fishCaughtTextGO);
             Object.Destroy(totalCaughtTextGO.transform.GetChild(4).gameObject);
             Object.Destroy(totalCaughtTextGO.transform.GetChild(3).gameObject);
             Object.Destroy(totalCaughtTextGO.transform.GetChild(2).gameObject);
@@ -109,8 +125,8 @@ namespace sailadex
             totalCaughtTextGO.transform.localPosition = new Vector3(0.8f, -0.21f, fishCaughtTextGO.transform.localPosition[2]);
             totalCaughtTextGO.transform.localRotation = fishCaughtTextGO.transform.localRotation;
             totalCaughtTextGO.transform.localScale = fishCaughtTextGO.transform.localScale;
-            fishnameTexts[Names.fishNames.Length] = totalCaughtTextGO.GetComponent<TextMesh>();
-            caughtCountTexts[Names.fishNames.Length] = totalCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>();
+            fishnameTexts[FishCaughtUI.FishNames.Length] = totalCaughtTextGO.GetComponent<TextMesh>();
+            caughtCountTexts[FishCaughtUI.FishNames.Length] = totalCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>();
 
             string[] totalCaughtBadges = { "caught50", "caught250", "caught500", "caughtAll" };
 
@@ -118,17 +134,21 @@ namespace sailadex
             {
                 var badgeName = totalCaughtBadges[j];
                 var badge = CreateBadgeObject(badgeName, totalCaughtTextGO.transform, new Vector3(15f, 15f, 1f), new Vector3(15f + j * 20f, -13f, 0f));
-                FishCaughtUI.instance.fishBadgeGOs.Add(badgeName, badge);
+                badgeGOs.Add(badgeName, badge);
             }
 
             Object.Destroy(fishCaughtTextGO);
-            FishCaughtUI.instance.fishNameTMs = fishnameTexts;
-            FishCaughtUI.instance.caughtCountTMs = caughtCountTexts;
 
-            Plugin.logger.LogInfo("Loaded fish caught UI");
+            FishCaughtUI.Instance.SetUIElems(fishnameTexts, caughtCountTexts, badgeGOs);
+
+            logger.LogInfo("Loaded fish caught UI");
 
             return fishCaughtUI;
         }
+
+        #endregion
+
+        #region PortsVisitedUI
 
         internal static GameObject MakePortsVisitedUI(GameObject repUI)
         {
@@ -145,7 +165,7 @@ namespace sailadex
             portsVisitedUI.transform.GetChild(1).localPosition = new Vector3(0.75f, 0.01f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
             portsVisitedUI.transform.GetChild(2).localPosition = new Vector3(0.02f, 0.22f, portsVisitedUI.transform.GetChild(2).localPosition[2]);
 
-            GameObject lagoon = GameObject.Instantiate(portsVisitedUI.transform.GetChild(1).gameObject);
+            var lagoon = GameObject.Instantiate(portsVisitedUI.transform.GetChild(1).gameObject);
             lagoon.transform.parent = portsVisitedUI.transform;
             lagoon.transform.localPosition = new Vector3(0.02f, -0.065f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
             lagoon.transform.localRotation = portsVisitedUI.transform.GetChild(1).localRotation;
@@ -153,20 +173,21 @@ namespace sailadex
             lagoon.name = "lagoon";
             lagoon.GetComponent<TextMesh>().text = "Fire Fish Lagoon";
 
-            TextMesh[] portNameTMs = new TextMesh[Names.portNames.Length];
-            TextMesh[] portVisitedTMs = new TextMesh[Names.portNames.Length];
+            var portNameTMs = new TextMesh[Region.AllPorts.Count];
+            var portVisitedTMs = new TextMesh[Region.AllPorts.Count];
+            var badgeGOs = new Dictionary<string, GameObject>();
             int portVisitedIndex = 0;
             int[] numPorts = { 7, 6, 10, 4 };
 
             for (int r = 0; r < 4; r++)
             {
-                Transform portsVisitedGO = portsVisitedUI.transform.GetChild(r);
+                var portsVisitedGO = portsVisitedUI.transform.GetChild(r);
                 Object.Destroy(portsVisitedGO.GetChild(1).gameObject);
                 Object.Destroy(portsVisitedGO.GetChild(2).gameObject);
                 Object.Destroy(portsVisitedGO.GetChild(4).gameObject);
 
-                GameObject portNameTMTemplate = portsVisitedGO.GetChild(0).gameObject;
-                GameObject portVisitedTMTemplate = portsVisitedGO.GetChild(3).gameObject;
+                var portNameTMTemplate = portsVisitedGO.GetChild(0).gameObject;
+                var portVisitedTMTemplate = portsVisitedGO.GetChild(3).gameObject;
                 portNameTMTemplate.name = "port1";
                 portNameTMTemplate.transform.localPosition = new Vector3(5f, -8f, -0.1f);
                 portVisitedTMTemplate.name = "visited port1";
@@ -177,14 +198,14 @@ namespace sailadex
 
                 for (int i = 1; i < numPorts[r]; i++)
                 {
-                    GameObject portNameTM = GameObject.Instantiate(portNameTMTemplate);
+                    var portNameTM = GameObject.Instantiate(portNameTMTemplate);
                     portNameTM.transform.parent = portNameTMTemplate.transform.parent;
                     portNameTM.transform.localPosition = new Vector3(portNameTMTemplate.transform.localPosition[0], portNameTMTemplate.transform.localPosition[1] - 7.5f * i, portNameTMTemplate.transform.localPosition[2]);
                     portNameTM.transform.localRotation = portNameTMTemplate.transform.localRotation;
                     portNameTM.transform.localScale = portNameTMTemplate.transform.localScale;
                     portNameTM.name = "port" + (i + 1);
 
-                    GameObject portVisitedTM = GameObject.Instantiate(portVisitedTMTemplate);
+                    var portVisitedTM = GameObject.Instantiate(portVisitedTMTemplate);
                     portVisitedTM.transform.parent = portVisitedTMTemplate.transform.parent;
                     portVisitedTM.transform.localPosition = new Vector3(portVisitedTMTemplate.transform.localPosition[0], portVisitedTMTemplate.transform.localPosition[1] - 7.5f * i, portVisitedTMTemplate.transform.localPosition[2]);
                     portVisitedTM.transform.localRotation = portVisitedTMTemplate.transform.localRotation;
@@ -198,21 +219,24 @@ namespace sailadex
 
                 var badgeName = portsVisitedGO.name + "Badge";
                 var badge = CreateBadgeObject(badgeName, portsVisitedGO, new Vector3(15f, 15f, 1f), new Vector3(-8f, -2f, 0f));
-                PortsVisitedUI.instance.portBadgeGOs.Add(badgeName, badge);
+                badgeGOs.Add(badgeName, badge);
             }
 
             var allPortsBN = "allPortsBadge";
             var allPortsBadge = CreateBadgeObject(allPortsBN, portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.22f, -0.007f));
             allPortsBadge.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
-            PortsVisitedUI.instance.portBadgeGOs.Add(allPortsBN, allPortsBadge);
+            badgeGOs.Add(allPortsBN, allPortsBadge);
 
-            PortsVisitedUI.instance.portNameTMs = portNameTMs;
-            PortsVisitedUI.instance.portVisitedTMs = portVisitedTMs;
+            PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 
-            Plugin.logger.LogInfo("Loaded ports visited UI");
+            logger.LogInfo("Loaded ports visited UI");
 
             return portsVisitedUI;
         }
+
+        #endregion
+
+        #region StatsUI
 
         internal static GameObject MakeStatsUI(GameObject repUI)
         {
@@ -227,52 +251,53 @@ namespace sailadex
             Object.Destroy(statsUI.transform.GetChild(1).gameObject);
             statsUI.AddComponent<StatsUI>();
 
-            GameObject statsTextGO = statsUI.transform.GetChild(0).gameObject;
+            var statsTextGO = statsUI.transform.GetChild(0).gameObject;
             statsTextGO.GetComponent<TextMesh>().font = statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
-            statsTextGO.GetComponent<TextMesh>().fontSize = 45;
+            statsTextGO.GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
             statsTextGO.GetComponent<MeshRenderer>().material = statsTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             statsTextGO.transform.GetChild(0).gameObject.name = "current value";
             statsTextGO.transform.GetChild(0).localPosition = new Vector3(38f, 0f, 0f);
             statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().font = statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
-            statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().fontSize = 45;
+            statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
             statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
             statsTextGO.transform.GetChild(0).GetComponent<MeshRenderer>().material = statsTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             statsTextGO.transform.GetChild(1).gameObject.name = "record value";
             statsTextGO.transform.GetChild(1).localPosition = new Vector3(80f, 0f, 0f);
-            statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontSize = 45;
+            statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
             statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
             statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontStyle = FontStyle.Normal;
-            Dictionary<string, TextMesh> statTMs = new Dictionary<string, TextMesh>();
+            var statTMs = new Dictionary<string, TextMesh>();
 
-            AddTrackedStat(statsTextGO, "CargoMass", 0.215f, statTMs);
-            AddTrackedStat(statsTextGO, "TotalMass", 0.215f - 0.03f, statTMs);
-            AddTrackedStat(statsTextGO, "UnderwayTime", 0.215f - 0.03f * 2, statTMs);
+            AddTrackedStat(statsTextGO, "CargoMass", 0.215f, statTMs);            
+            AddTrackedStat(statsTextGO, "TotalMass", 0.215f - 0.025f, statTMs);
+            AddTrackedStat(statsTextGO, "UnderwayTime", 0.215f - 0.025f * 2, statTMs);
 
-            AddTrackedStat(statsTextGO, "MilesSailed", 0.08f, statTMs, true);
+            AddTrackedStat(statsTextGO, "MilesSailed", 0.09f, statTMs, true);
+            var yPosList = new List<float>();
             int j = 0;
-            foreach (string ltStat in Names.intStatNames)
+            foreach (string ltStat in StatsUI.IntStatNames)
             {
                 if (ltStat == "UnderwayDay") continue;
-                if (ltStat == "FlotsamEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.flotsamEnabled)) continue;
-                if (ltStat == "DenseFogEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.denseFogEnabled)) continue;
-                if (ltStat == "SeaLifeEncounters" && (RandomEncounters.pluginInstance == null || !RandomEncounters.isSeaLifeEnabled)) continue;
-                AddTrackedStat(statsTextGO, ltStat, 0.05f - 0.03f * j, statTMs, true);
+                if (StatsUI.RandomEncounterStats.ContainsKey(ltStat))
+                    yPosList.Add(0.065f - 0.025f * j);
+                AddTrackedStat(statsTextGO, ltStat, 0.065f - 0.025f * j, statTMs, true);
                 j++;
             }
+            StatsUI.RandomEncounterStatYPos = yPosList;
 
             int i = 0;
-            foreach (string transit in Names.regionTransitNames)
+            foreach (string transit in Region.TransitCodes)
             {
-                AddTrackedStat(statsTextGO, transit, 0.215f - 0.03f * i, statTMs, false, true);
+                AddTrackedStat(statsTextGO, transit, 0.215f - 0.025f * i, statTMs, false, true);                
                 i++;
             }
 
-            StatsUI.instance.statTMs = statTMs;
+            StatsUI.Instance.SetUIElems(statTMs);
 
             statsTextGO.name = "stats header";
-            statsTextGO.GetComponent<TextMesh>().text = "Stat                        Current                     Record";
+            statsTextGO.GetComponent<TextMesh>().text = "Stat                           Current                         Record";
             statsTextGO.transform.localPosition = new Vector3(0.82f, 0.24f, -0.007f);
-            statsTextGO.GetComponent<TextMesh>().fontSize = 50;
+            statsTextGO.GetComponent<TextMesh>().fontSize = STAT_HEADER_FONT_SIZE;
             statsTextGO.GetComponent<TextMesh>().fontStyle = FontStyle.Bold;
             Object.Destroy(statsTextGO.transform.GetChild(4).gameObject);
             Object.Destroy(statsTextGO.transform.GetChild(3).gameObject);
@@ -280,36 +305,36 @@ namespace sailadex
             Object.Destroy(statsTextGO.transform.GetChild(1).gameObject);
             Object.Destroy(statsTextGO.transform.GetChild(0).gameObject);
 
-            GameObject ltStatsTextGO = GameObject.Instantiate(statsTextGO, statsTextGO.transform.parent);
+            var ltStatsTextGO = GameObject.Instantiate(statsTextGO, statsTextGO.transform.parent);
             ltStatsTextGO.name = "lifetime stats header";
             ltStatsTextGO.GetComponent<TextMesh>().text = "Lifetime Stats";
-            ltStatsTextGO.transform.localPosition = new Vector3(0.82f, 0.105f, -0.007f);
+            ltStatsTextGO.transform.localPosition = new Vector3(0.82f, 0.115f, -0.007f);
             Object.Destroy(ltStatsTextGO.transform.GetChild(4).gameObject);
             Object.Destroy(ltStatsTextGO.transform.GetChild(3).gameObject);
             Object.Destroy(ltStatsTextGO.transform.GetChild(2).gameObject);
             Object.Destroy(ltStatsTextGO.transform.GetChild(1).gameObject);
             Object.Destroy(ltStatsTextGO.transform.GetChild(0).gameObject);
 
-            GameObject transitTextGO = GameObject.Instantiate(statsTextGO, statsTextGO.transform.parent);
+            var transitTextGO = GameObject.Instantiate(statsTextGO, statsTextGO.transform.parent);
             transitTextGO.name = "transit times header";
-            transitTextGO.GetComponent<TextMesh>().text = "Transit Times          Last                           Record";
-            transitTextGO.transform.localPosition = new Vector3(0.12f, 0.24f, -0.007f);
+            transitTextGO.GetComponent<TextMesh>().text = "Transit Times             Last                               Record";
+            transitTextGO.transform.localPosition = new Vector3(0.14f, 0.24f, -0.007f);
             Object.Destroy(transitTextGO.transform.GetChild(4).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(3).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(2).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(1).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(0).gameObject);
 
-            Plugin.logger.LogInfo("Loaded stats & transit UI");
+            logger.LogInfo("Loaded stats & transit UI");
 
             return statsUI;
         }
 
         private static void AddTrackedStat(GameObject templateGO, string name, float yPos, Dictionary<string, TextMesh> statTMs, bool ltime = false, bool transit = false)
         {
-            var xPos = transit ? 0.12f : 0.82f;
+            var xPos = transit ? 0.14f : 0.82f;
             var preText = transit ? "last" : "current";
-            GameObject newTextGO = GameObject.Instantiate(templateGO);
+            var newTextGO = GameObject.Instantiate(templateGO);
             Object.Destroy(newTextGO.transform.GetChild(4).gameObject);
             Object.Destroy(newTextGO.transform.GetChild(3).gameObject);
             Object.Destroy(newTextGO.transform.GetChild(2).gameObject);
@@ -327,11 +352,27 @@ namespace sailadex
             statTMs[preText + name] = newTextGO.transform.GetChild(0).GetComponent<TextMesh>();
             if (!ltime)
                 statTMs["record" + name] = newTextGO.transform.GetChild(1).GetComponent<TextMesh>();
+            AddLine(newTextGO.transform.GetChild(1).gameObject);
         }
+
+        private static void AddLine(GameObject templateGO)
+        {
+            var lineGO = GameObject.Instantiate(templateGO);
+            lineGO.name = "line";
+            lineGO.transform.parent = templateGO.transform.parent;
+            lineGO.transform.localPosition = new Vector3(-1.2f, -1.75f, 0f);
+            lineGO.transform.localRotation = templateGO.transform.localRotation;
+            lineGO.transform.localScale = templateGO.transform.localScale;
+            var textMesh = lineGO.GetComponent<TextMesh>();
+            textMesh.color = new Color32(0x02,0x02, 0x0A, 0x85);
+            textMesh.text = "--------------------------------------------------------";
+        }
+
+        #endregion
 
         private static GameObject CreateBadgeObject(string name, Transform parent, Vector3 scale, Vector3 position)
         {
-            GameObject badge = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            var badge = GameObject.CreatePrimitive(PrimitiveType.Quad);
             badge.layer = 5;
             Object.Destroy(badge.GetComponent<MeshCollider>());
             badge.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;

@@ -5,46 +5,53 @@ namespace sailadex
 {
     public class NotificationUiQueue : MonoBehaviour
     {
-        public static NotificationUiQueue instance;
-        private float timer;
-        private Queue<string> queue;
-        private AudioSource audioSource;
+        public static NotificationUiQueue Instance { get; private set; }
+        private float _timer;
+        private Queue<string> _queue;
+        private AudioSource _audioSource;
+
+        private const float TIMER_DURATION = 3f;
 
         public void Start()
         {
-            instance = this;
-            queue = new Queue<string>();
-            timer = 0f;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            _queue = new Queue<string>();
+            _timer = 0f;
 
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.volume = Plugin.notificationSoundVolume.Value;
-            audioSource.spatialBlend = 1.0f;
-            audioSource.minDistance = 10f;
-            audioSource.maxDistance = 20f;
+            _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource.volume = SAD_Plugin.notificationSoundVolume.Value;
+            _audioSource.spatialBlend = 1.0f;
+            _audioSource.minDistance = 10f;
+            _audioSource.maxDistance = 20f;
         }
 
         private void Update()
         {
-            if (timer > 0f)
+            if (_timer > 0f)
             {
-                timer -= Time.deltaTime;
+                _timer -= Time.deltaTime;
             }
             else
             {
-                timer = 0f;
-                if (queue.Count > 0) 
+                _timer = 0f;
+                if (_queue.Count > 0) 
                 {
-                    NotificationUi.instance.ShowNotification(queue.Dequeue());
-                    if (Plugin.notificationSoundVolume.Value > 0f)
-                        audioSource.PlayOneShot(AssetsLoader.notificationSound);
-                    timer = 3f;
+                    NotificationUi.instance.ShowNotification(_queue.Dequeue());
+                    if (SAD_Plugin.notificationSoundVolume.Value > 0f)
+                        _audioSource.PlayOneShot(AssetsLoader.notificationSound);
+                    _timer = TIMER_DURATION;
                 }
             }
         }
 
         public void QueueNotification(string message) 
         {
-            queue.Enqueue(message);
+            _queue.Enqueue(message);
         }
     }
 }

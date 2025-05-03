@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BepInEx.Logging;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -9,7 +10,9 @@ namespace sailadex
     {
         public static AudioClip notificationSound;
         public static Dictionary<string, Material> materials;
-        public static Dictionary<string, Texture2D> textures;        
+        public static Dictionary<string, Texture2D> textures;
+
+        static readonly ManualLogSource logger = SAD_Plugin.logger;
 
         public static void Start()
         {
@@ -23,15 +26,7 @@ namespace sailadex
 
         private static void LoadAudio()
         {
-            List<AudioClip> audioClips = new List<AudioClip>();
-            GetAudioClip("twoBells", audioClips);
-            Debug.Log($"AudioClips length {audioClips.Count}");
-            notificationSound = audioClips[0];
-        }
-
-        private static void GetAudioClip(string fileName, List<AudioClip> audioClips)
-        {
-            var clipPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "sounds", fileName + ".wav");
+            var clipPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "sounds", "twoBells.wav");
             var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV);
 
             webRequest.SendWebRequest();
@@ -41,67 +36,66 @@ namespace sailadex
 
             if (webRequest.isNetworkError)
             {
-                Debug.Log(webRequest.error);
+                logger.LogError(webRequest.error);
+                return;
             }
-            else
-            {
-                AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-                clip.name = fileName;
-                audioClips.Add(clip);
-            }
+
+            AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+            clip.name = "twoBells";
+            notificationSound = clip;           
+
+            logger.LogInfo("Audio loaded.");
         }
 
         private static void LoadFishBadges()
         {
-            var fishBadgesPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "badges", "fish");
+            var fishBadgesPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "badges", "fish");
             int[] amountNums = { 25, 50, 100 };
-            Texture2D tempTexture;
-            string fishBadgeName;
 
-            foreach (string fishName in Names.fishNames)
+            foreach (string fishName in FishCaughtUI.FishNames)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    fishBadgeName = fishName + amountNums[i];
-                    tempTexture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
-                    textures.Add(fishBadgeName, tempTexture);
-                    materials.Add(fishBadgeName, CreateMaterial(tempTexture));
+                    var fishBadgeName = fishName + amountNums[i];
+                    var texture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
+                    textures.Add(fishBadgeName, texture);
+                    materials.Add(fishBadgeName, CreateMaterial(texture));
                 }
             }
 
-            foreach (string caughtBadge in Names.totalFishBadgeNames)
-            {                
-                fishBadgeName = caughtBadge;
-                tempTexture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
-                textures.Add(fishBadgeName, tempTexture);
-                materials.Add(fishBadgeName, CreateMaterial(tempTexture));                
+            foreach (string caughtBadge in FishCaughtUI.TotalFishBadgeNames)
+            {
+                var fishBadgeName = caughtBadge;
+                var texture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
+                textures.Add(fishBadgeName, texture);
+                materials.Add(fishBadgeName, CreateMaterial(texture));                
             }
 
-            Plugin.logger.LogInfo("Fishing badges loaded.");
+            logger.LogInfo("Fishing badges loaded.");
         }
 
         private static void LoadPortBadges()
         {
-            var portBadgesPath = Path.Combine(Path.GetDirectoryName(Plugin.instance.Info.Location), "assets", "badges", "ports");
-            Texture2D tempTexture;
+            var portBadgesPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "badges", "ports");
 
-            foreach (string pbName in Names.portBadgeNames)
+            foreach (string pbName in Region.AllBadgeNames)
             {
-                tempTexture = LoadTexture(Path.Combine(portBadgesPath, pbName + ".png"));
-                textures.Add(pbName, tempTexture);
-                materials.Add(pbName, CreateMaterial(tempTexture));                
+                var texture = LoadTexture(Path.Combine(portBadgesPath, pbName + ".png"));
+                textures.Add(pbName, texture);
+                materials.Add(pbName, CreateMaterial(texture));
             }
-            Plugin.logger.LogInfo("Port badges loaded.");
+
+            logger.LogInfo("Port badges loaded.");
         }
 
         private static Texture2D LoadTexture(string path)
         {
-            byte[] array = File.Exists(path) ? File.ReadAllBytes(path) : null;
-            Texture2D texture2D = new Texture2D(1, 1);
+            var array = File.Exists(path) ? File.ReadAllBytes(path) : null;
+            var texture2D = new Texture2D(1, 1);
             if (array == null)
             {
-                Plugin.logger.LogError("Failed to load " + path);
-                return texture2D;                
+                logger.LogError($"Failed to load {path}");
+                return texture2D;
             }
             ImageConversion.LoadImage(texture2D, array);
             return texture2D;
@@ -109,7 +103,7 @@ namespace sailadex
 
         private static Material CreateMaterial(Texture2D tex)
         {
-            Material material = new Material(Shader.Find("Standard"))
+            var material = new Material(Shader.Find("Standard"))
             {
                 renderQueue = 2001,
                 mainTexture = tex
@@ -117,6 +111,6 @@ namespace sailadex
             material.EnableKeyword("_ALPHATEST_ON");
             material.SetShaderPassEnabled("ShadowCaster", false);
             return material;
-        }                     
+        }
     }
 }

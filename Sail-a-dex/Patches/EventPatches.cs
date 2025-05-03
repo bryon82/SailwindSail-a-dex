@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Logging;
+using HarmonyLib;
 using System.Linq;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ namespace sailadex
 {
     internal class EventPatches
     {
+        static readonly ManualLogSource logger = SAD_Plugin.logger;
+
         [HarmonyPatch(typeof(FishingRodFish))]
         private class FishingRodFishPatches
         {
@@ -13,8 +16,8 @@ namespace sailadex
             [HarmonyPatch("CollectFish")]
             public static void CollectFishPatch(FishingRodFish __instance, GameObject ___currentFish)
             {
-                if (Plugin.fishCaughtUIEnabled.Value)
-                    FishCaughtUI.instance.RegisterCatch(___currentFish);
+                if (SAD_Plugin.fishCaughtUIEnabled.Value)
+                    FishCaughtUI.Instance.RegisterCatch(___currentFish);
             }
         }
 
@@ -26,25 +29,14 @@ namespace sailadex
             [HarmonyPatch("OnTriggerEnter")]
             public static void OnTriggerEnterPatch(IslandMarketWarehouseArea __instance, IslandMarket ___market, Collider other)
             {
-                if (Plugin.portsVisitedUIEnabled.Value && other.CompareTag("Player"))
-                    PortsVisitedUI.instance.RegisterVisit(___market.GetPortName());
-                if (Plugin.statsUIEnabled.Value && other.CompareTag("Player"))
-                    StatsUI.instance.IncrementPortVisited(___market.GetPortName());
+                if (SAD_Plugin.portsVisitedUIEnabled.Value && other.CompareTag("Player"))
+                    PortsVisitedUI.Instance.RegisterVisit(___market.GetPortName());
+                if (SAD_Plugin.statsUIEnabled.Value && other.CompareTag("Player"))
+                    StatsUI.Instance.IncrementPortVisited(___market.GetPortName());
                 
                     
             }
         }
-
-        //[HarmonyPatch(typeof(PlayerEmbarkDisembarkTrigger))]
-        //private class PlayerEmbarkDisembarkTriggerPatches
-        //{
-        //    [HarmonyPostfix]
-        //    [HarmonyPatch("EnterBoat")]
-        //    public static void EnterBoatPatch()
-        //    {
-        //        //Debug.Log("Embarking boat");
-        //    }
-        //}
 
         [HarmonyPatch(typeof(ShipItem))]
         private class ShipItemPatches
@@ -53,16 +45,16 @@ namespace sailadex
             [HarmonyPatch("EnterBoat")]
             public static void EnterBoatPatch()
             {
-                if (Plugin.statsUIEnabled.Value && GameState.playing)
-                    StatsUI.instance.RegisterCurrentMass();
+                if (SAD_Plugin.statsUIEnabled.Value && GameState.playing)
+                    StatsUI.Instance.RegisterCurrentMass();
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("ExitBoat")]
             public static void ExitBoatPatch()
             {
-                if (Plugin.statsUIEnabled.Value && GameState.playing)
-                    StatsUI.instance.RegisterCurrentMass();
+                if (SAD_Plugin.statsUIEnabled.Value && GameState.playing)
+                    StatsUI.Instance.RegisterCurrentMass();
             }
         }
 
@@ -84,13 +76,13 @@ namespace sailadex
             [HarmonyPatch("OnPickup")]
             public static void OnPickupPatch(Rigidbody ___boatRigidbody, string __state)
             {
-                if (Plugin.statsUIEnabled.Value 
-                    && !GameState.currentlyLoading 
-                    && GameState.playing
-                    && !___boatRigidbody.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored())
+                if (SAD_Plugin.statsUIEnabled.Value &&
+                    !GameState.currentlyLoading &&
+                    GameState.playing &&
+                    !___boatRigidbody.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored())
                 {
-                    Plugin.logger.LogDebug($"Unmoor from {__state} Day: {GameState.day} Time: {Sun.sun.globalTime}");
-                    StatsUI.instance.RegisterUnderway(__state);
+                    logger.LogDebug($"Unmoor from {__state} Day: {GameState.day} Time: {Sun.sun.globalTime}");
+                    StatsUI.Instance.RegisterUnderway(__state);
                 }
             }
 
@@ -98,19 +90,19 @@ namespace sailadex
             [HarmonyPatch("MoorTo")]
             public static void MoorToPatch(Rigidbody ___boatRigidbody)
             {
-                if (Plugin.statsUIEnabled.Value 
-                    && !GameState.currentlyLoading 
-                    && GameState.playing
-                    && (___boatRigidbody.transform == GameState.lastBoat || ___boatRigidbody.transform == GameState.currentBoat?.parent)
-                    && ___boatRigidbody.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored())
+                if (SAD_Plugin.statsUIEnabled.Value &&
+                    !GameState.currentlyLoading &&
+                    GameState.playing &&
+                    (___boatRigidbody.transform == GameState.lastBoat || ___boatRigidbody.transform == GameState.currentBoat?.parent) &&
+                    ___boatRigidbody.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored())
                 {
                     var islandName = ___boatRigidbody.gameObject.GetComponent<BoatMooringRopes>().ropes
                         .Where(r => r.GetPrivateField<SpringJoint>("mooredToSpring") != null)
                         .Select(r => r.GetPrivateField<SpringJoint>("mooredToSpring").transform.parent.name)
                         .FirstOrDefault();
-                    Plugin.logger.LogDebug($"Moored at: {islandName} Day: {GameState.day} Time: {Sun.sun.globalTime} ");
-                    StatsUI.instance.RegisterMoored(islandName);
-                    StatsUI.instance.UpdateMilesText();
+                    logger.LogDebug($"Moored at: {islandName} Day: {GameState.day} Time: {Sun.sun.globalTime} ");
+                    StatsUI.Instance.RegisterMoored(islandName);
+                    StatsUI.Instance.UpdateMilesText();
                 }
             }
         }
@@ -122,8 +114,8 @@ namespace sailadex
             [HarmonyPatch("Drink")]
             public static void DrinkPatch(float ___health)
             {
-                if (Plugin.statsUIEnabled.Value && ___health > 0)
-                    StatsUI.instance.IncrementIntStat("DrinksTaken");
+                if (SAD_Plugin.statsUIEnabled.Value && ___health > 0)
+                    StatsUI.Instance.IncrementIntStat("DrinksTaken");
             }
         }
 
@@ -134,8 +126,8 @@ namespace sailadex
             [HarmonyPatch("EatFood")]
             public static void EatFoodPatch()
             {
-                if (Plugin.statsUIEnabled.Value && !(PlayerNeeds.instance.eatCooldown > 0f))
-                    StatsUI.instance.IncrementIntStat("FoodsEaten");
+                if (SAD_Plugin.statsUIEnabled.Value && !(PlayerNeeds.instance.eatCooldown > 0f))
+                    StatsUI.Instance.IncrementIntStat("FoodsEaten");
             }
         }
 
@@ -146,8 +138,8 @@ namespace sailadex
             [HarmonyPatch("StopSmoking")]
             public static void StopSmokingPatch(float ___currentInhaleDuration)
             {
-                if (Plugin.statsUIEnabled.Value && ___currentInhaleDuration > 0f)
-                    StatsUI.instance.IncrementIntStat("TimesSmoked");
+                if (SAD_Plugin.statsUIEnabled.Value && ___currentInhaleDuration > 0f)
+                    StatsUI.Instance.IncrementIntStat("TimesSmoked");
             }
         }
 
@@ -158,12 +150,12 @@ namespace sailadex
             [HarmonyPatch("EnterBed")]
             public static void EnterBedPatch()
             {
-                if (Plugin.statsUIEnabled.Value)
+                if (SAD_Plugin.statsUIEnabled.Value)
                 {
-                    StatsUI.instance.IncrementIntStat("TimesSlept");
+                    StatsUI.Instance.IncrementIntStat("TimesSlept");
 
-                    if (Plugin.updateMilesSailed.Value == "sleep")
-                        StatsUI.instance.UpdateMilesText();
+                    if (SAD_Plugin.updateMilesSailed.Value == "sleep")
+                        StatsUI.Instance.UpdateMilesText();
                 }
             }
         }
@@ -175,8 +167,8 @@ namespace sailadex
             [HarmonyPatch("CompleteMission")]
             public static void CompleteMissionPatch()
             {
-                if (Plugin.statsUIEnabled.Value)
-                    StatsUI.instance.IncrementIntStat("MissionsCompleted");
+                if (SAD_Plugin.statsUIEnabled.Value)
+                    StatsUI.Instance.IncrementIntStat("MissionsCompleted");
             }
         }
 
@@ -187,8 +179,8 @@ namespace sailadex
             [HarmonyPatch("Update")]
             public static void UpdatePatch(bool ___teleportPlayer)
             {
-                if (Plugin.statsUIEnabled.Value && ___teleportPlayer)
-                    StatsUI.instance.PlayerTeleported();
+                if (SAD_Plugin.statsUIEnabled.Value && ___teleportPlayer)
+                    StatsUI.Instance.PlayerTeleported();
             }
         }
 
@@ -199,8 +191,8 @@ namespace sailadex
             [HarmonyPatch("FixedUpdate")]
             public static void FixedUpdatePatch()
             {
-                if (Plugin.statsUIEnabled.Value && GameState.currentBoat != null)                
-                    StatsUI.instance.TrackDistance();
+                if (SAD_Plugin.statsUIEnabled.Value && GameState.currentBoat != null)                
+                    StatsUI.Instance.TrackDistance();
                 
             }
 
@@ -208,8 +200,8 @@ namespace sailadex
             [HarmonyPatch("UpdateMass")]
             public static void UpdateMassPatch(Rigidbody ___body)
             {
-                if (Plugin.statsUIEnabled.Value && GameState.currentBoat != null)
-                    StatsUI.instance.RegisterTotalMass(___body.mass);
+                if (SAD_Plugin.statsUIEnabled.Value && GameState.currentBoat != null)
+                    StatsUI.Instance.RegisterTotalMass(___body.mass);
             }
         }
 
@@ -220,16 +212,16 @@ namespace sailadex
             [HarmonyPatch("GetNormalizedDistance")]
             public static void GetNormalizedDistancePatch(float __result)
             {
-                if (Plugin.statsUIEnabled.Value 
-                    && GameState.currentBoat != null
-                    && !GameState.currentBoat.parent.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored()
-                    && __result <= WeatherStorms.instance.GetPrivateField<float>("rainBorder"))
+                if (SAD_Plugin.statsUIEnabled.Value &&
+                    GameState.currentBoat != null && 
+                    !GameState.currentBoat.parent.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored() &&
+                    __result <= WeatherStorms.instance.GetPrivateField<float>("rainBorder"))
                 {
-                    StatsUI.instance.IncrementStormsWeathered();
+                    StatsUI.Instance.IncrementStormsWeathered();
                 }
 
                 if (__result > WeatherStorms.instance.GetPrivateField<float>("cloudyBorder"))
-                    StatsUI.instance.ClearLastStorm();
+                    StatsUI.Instance.ClearLastStorm();
             }
         }
     }

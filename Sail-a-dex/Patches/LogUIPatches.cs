@@ -27,17 +27,17 @@ namespace sailadex
                 bookmarkPos.Push(-0.387f);
                 bookmarkPos.Push(-0.26f);
 
-                if (Plugin.fishCaughtUIEnabled.Value)
+                if (SAD_Plugin.fishCaughtUIEnabled.Value)
                 {
                     bookmarks[0].transform.localPosition = new Vector3(bookmarkPos.Pop(), 0.0027f, -0.4566f);
                     bookmarks[0].SetActive(true);
-                }                
-                if (Plugin.portsVisitedUIEnabled.Value)
+                }
+                if (SAD_Plugin.portsVisitedUIEnabled.Value)
                 {
                     bookmarks[1].transform.localPosition = new Vector3(bookmarkPos.Pop(), 0.0028f, -0.4566f);
                     bookmarks[1].SetActive(true);
                 }
-                if (Plugin.statsUIEnabled.Value)
+                if (SAD_Plugin.statsUIEnabled.Value)
                 {
                     bookmarks[2].transform.localPosition = new Vector3(bookmarkPos.Pop(), -0.0032f, -0.4566f);
                     bookmarks[2].SetActive(true);
@@ -46,7 +46,7 @@ namespace sailadex
 
             [HarmonyPostfix]
             [HarmonyPatch("HideUI")]
-            public static void HideUIPatches(MissionListUI __instance)
+            public static void HideUIPatches()
             {
                 fishCaughtUI.SetActive(false);
                 portsVisitedUI.SetActive(false);
@@ -64,30 +64,28 @@ namespace sailadex
                 {
                     case UIBuilder.fishCaught:
                         fishCaughtUI.SetActive(true);
-                        FishCaughtUI.instance.UpdatePage();
+                        FishCaughtUI.Instance.UpdatePage();
                         break;
                     case UIBuilder.portsVisited:
                         portsVisitedUI.SetActive(true);
-                        PortsVisitedUI.instance.UpdatePage();
+                        PortsVisitedUI.Instance.UpdatePage();
                         break;
                     case UIBuilder.stats:
                         statsUI.SetActive(true);
-                        StatsUI.instance.UpdatePage();
+                        StatsUI.Instance.UpdatePage();
                         break;
                 }
             }
 
             [HarmonyPrefix]
             [HarmonyPatch("Start")]
-            public static void StartPatch(MissionListUI __instance, GameObject ___modeButtons, GameObject ___reputationUI)
+            public static void StartPatch(GameObject ___modeButtons, GameObject ___reputationUI)
             {
-                AssetsLoader.Start();
-
                 bookmarks = UIBuilder.MakeBookmarks(___modeButtons);
                 fishCaughtUI = UIBuilder.MakeFishCaughtUI(___reputationUI);
                 portsVisitedUI = UIBuilder.MakePortsVisitedUI(___reputationUI);
                 statsUI = UIBuilder.MakeStatsUI(___reputationUI);
-            }            
+            }
         }
 
         [HarmonyPatch(typeof(NotificationUi))]
@@ -97,7 +95,7 @@ namespace sailadex
             [HarmonyPatch("Start")]
             public static void StartPatch(NotificationUi ___instance)
             {
-                if (Plugin.notificationsEnabled.Value)
+                if (SAD_Plugin.notificationsEnabled.Value)
                     ___instance.gameObject.AddComponent<NotificationUiQueue>();
             }
         }

@@ -15,7 +15,7 @@ namespace sailadex
                 .Single();
             MethodInfo original = AccessTools.Method(ferryTravelClass, "TeleportPlayer");
             MethodInfo patch = AccessTools.Method(typeof(FerryTravelPatches), "TeleportPlayerPatch");
-            Plugin.harmony.Patch(original, new HarmonyMethod(patch));
+            SAD_Plugin.harmony.Patch(original, new HarmonyMethod(patch));
         } 
 
         public class FerryTravelPatches
@@ -23,8 +23,8 @@ namespace sailadex
             [HarmonyPostfix]
             public static void TeleportPlayerPatch()
             {
-                if (Plugin.statsUIEnabled.Value)
-                    StatsUI.instance.PlayerTeleported();
+                if (SAD_Plugin.statsUIEnabled.Value)
+                    StatsUI.Instance.PlayerTeleported();
             }
         }
     }

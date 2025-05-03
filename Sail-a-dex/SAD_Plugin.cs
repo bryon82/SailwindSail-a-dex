@@ -11,11 +11,11 @@ namespace sailadex
     [BepInDependency(MODSAVEBACKUPS_GUID, MODSAVEBACKUPS_VERSION)]
     [BepInDependency(PASSAGEDUDE_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(RANDOMENCOUNTERS_GUID, BepInDependency.DependencyFlags.SoftDependency)]
-    public class Plugin : BaseUnityPlugin
+    public class SAD_Plugin : BaseUnityPlugin
     {
         public const string PLUGIN_GUID = "com.raddude82.sailadex";
-        public const string PLUGIN_NAME = "Sail-A-Dex";
-        public const string PLUGIN_VERSION = "1.4.5";
+        public const string PLUGIN_NAME = "Sail-a-dex";
+        public const string PLUGIN_VERSION = "1.5.0";
 
         public const string MODSAVEBACKUPS_GUID = "com.raddude82.modsavebackups";
         public const string MODSAVEBACKUPS_VERSION = "1.1.1";
@@ -31,12 +31,12 @@ namespace sailadex
         internal static ConfigEntry<float> notificationSoundVolume;
         internal static ConfigEntry<string> updateMilesSailed;
 
-        internal static Plugin instance;
+        internal static SAD_Plugin Instance { get; private set; }
         internal static ManualLogSource logger;
         internal static Harmony harmony;
 
         private void Awake()
-        {            
+        {
             fishNamesHidden = Config.Bind("Settings", "Hide Fish Names Before Caught", true, "true = fish names will be hidden before being caught for the first time.");
             portNamesHidden = Config.Bind("Settings", "Hide Port Names Before Visited", false, "true = port names will be hidden before visited for the first time.");
             fishCaughtUIEnabled = Config.Bind("Settings", "Enable Fish Caught UI", true, "true = UI for how many fish you caught will be enabled.");
@@ -46,8 +46,14 @@ namespace sailadex
             notificationSoundVolume = Config.Bind("Settings", "Notification Volume", 0.2f, "Above 1f is loud and not recommended. Set to 0f to disable.");
             updateMilesSailed = Config.Bind("Settings", "Miles Sailed Updates", "moored", new ConfigDescription("Miles sailed text will be updated once moored, going to sleeping or moored, or in real time.", new AcceptableValueList<string>("moored", "sleep", "realtime")) );
 
-            instance = this;
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this; 
             logger = Logger;
+            AssetsLoader.Start();
             harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PLUGIN_GUID);
 
             foreach (var plugin in Chainloader.PluginInfos)
@@ -64,7 +70,7 @@ namespace sailadex
                     RandomEncounters.pluginInstance = plugin.Value.Instance;
                     RandomEncounters.PatchMod();
                 }
-            }            
+            }
         }
     }
 }
