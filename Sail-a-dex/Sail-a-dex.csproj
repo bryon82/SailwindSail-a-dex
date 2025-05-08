@@ -89,6 +89,7 @@
     <Compile Include="UILogic\Region.cs" />
     <Compile Include="UI\UIBuilder.cs" />
     <Compile Include="Utilities\AssetsLoader.cs" />
+    <Compile Include="Utilities\Configs.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\NotificationUiQueue.cs" />
     <Compile Include="SAD_Plugin.cs" />

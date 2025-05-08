@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
+using static sailadex.Configs;
 
 namespace sailadex
 {
@@ -27,17 +28,17 @@ namespace sailadex
                 bookmarkPos.Push(-0.387f);
                 bookmarkPos.Push(-0.26f);
 
-                if (SAD_Plugin.fishCaughtUIEnabled.Value)
+                if (fishCaughtUIEnabled.Value)
                 {
                     bookmarks[0].transform.localPosition = new Vector3(bookmarkPos.Pop(), 0.0027f, -0.4566f);
                     bookmarks[0].SetActive(true);
                 }
-                if (SAD_Plugin.portsVisitedUIEnabled.Value)
+                if (portsVisitedUIEnabled.Value)
                 {
                     bookmarks[1].transform.localPosition = new Vector3(bookmarkPos.Pop(), 0.0028f, -0.4566f);
                     bookmarks[1].SetActive(true);
                 }
-                if (SAD_Plugin.statsUIEnabled.Value)
+                if (statsUIEnabled.Value)
                 {
                     bookmarks[2].transform.localPosition = new Vector3(bookmarkPos.Pop(), -0.0032f, -0.4566f);
                     bookmarks[2].SetActive(true);
@@ -95,7 +96,7 @@ namespace sailadex
             [HarmonyPatch("Start")]
             public static void StartPatch(NotificationUi ___instance)
             {
-                if (SAD_Plugin.notificationsEnabled.Value)
+                if (notificationsEnabled.Value)
                     ___instance.gameObject.AddComponent<NotificationUiQueue>();
             }
         }

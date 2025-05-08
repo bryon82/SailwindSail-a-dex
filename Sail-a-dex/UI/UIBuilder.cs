@@ -1,15 +1,12 @@
-﻿using BepInEx.Logging;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using static sailadex.SAD_Plugin;
 
 namespace sailadex
 {
     internal class UIBuilder
     {
-        private static readonly ManualLogSource logger = SAD_Plugin.logger;
-
         internal const MissionListMode fishCaught = (MissionListMode)5;
         internal const MissionListMode portsVisited = (MissionListMode)6;
         internal const MissionListMode stats = (MissionListMode)7;
@@ -84,7 +81,7 @@ namespace sailadex
             fishCaughtTextGO.transform.GetChild(1).gameObject.name = "caught count";
             fishCaughtTextGO.transform.GetChild(1).localPosition = new Vector3(55f, 0f, fishCaughtTextGO.transform.GetChild(1).localPosition[2]);
             fishCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontSize = FISH_CAUGHT_FONT_SIZE;
-            
+
             var caughtCountTexts = new TextMesh[FishCaughtUI.FishNames.Length + 1];
             var fishnameTexts = new TextMesh[FishCaughtUI.FishNames.Length + 1];
             var badgeGOs = new Dictionary<string, GameObject>();
@@ -141,7 +138,7 @@ namespace sailadex
 
             FishCaughtUI.Instance.SetUIElems(fishnameTexts, caughtCountTexts, badgeGOs);
 
-            logger.LogInfo("Loaded fish caught UI");
+            LogInfo("Loaded fish caught UI");
 
             return fishCaughtUI;
         }
@@ -229,7 +226,7 @@ namespace sailadex
 
             PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 
-            logger.LogInfo("Loaded ports visited UI");
+            LogInfo("Loaded ports visited UI");
 
             return portsVisitedUI;
         }
@@ -268,7 +265,7 @@ namespace sailadex
             statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().fontStyle = FontStyle.Normal;
             var statTMs = new Dictionary<string, TextMesh>();
 
-            AddTrackedStat(statsTextGO, "CargoMass", 0.215f, statTMs);            
+            AddTrackedStat(statsTextGO, "CargoMass", 0.215f, statTMs);
             AddTrackedStat(statsTextGO, "TotalMass", 0.215f - 0.025f, statTMs);
             AddTrackedStat(statsTextGO, "UnderwayTime", 0.215f - 0.025f * 2, statTMs);
 
@@ -325,7 +322,7 @@ namespace sailadex
             Object.Destroy(transitTextGO.transform.GetChild(1).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(0).gameObject);
 
-            logger.LogInfo("Loaded stats & transit UI");
+            LogInfo("Loaded stats & transit UI");
 
             return statsUI;
         }

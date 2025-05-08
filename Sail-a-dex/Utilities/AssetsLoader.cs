@@ -1,8 +1,8 @@
-﻿using BepInEx.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using static sailadex.SAD_Plugin;
 
 namespace sailadex
 {
@@ -11,8 +11,6 @@ namespace sailadex
         public static AudioClip notificationSound;
         public static Dictionary<string, Material> materials;
         public static Dictionary<string, Texture2D> textures;
-
-        static readonly ManualLogSource logger = SAD_Plugin.logger;
 
         public static void Start()
         {
@@ -26,7 +24,7 @@ namespace sailadex
 
         private static void LoadAudio()
         {
-            var clipPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "sounds", "twoBells.wav");
+            var clipPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "sounds", "twoBells.wav");
             var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV);
 
             webRequest.SendWebRequest();
@@ -36,20 +34,20 @@ namespace sailadex
 
             if (webRequest.isNetworkError)
             {
-                logger.LogError(webRequest.error);
+                LogError(webRequest.error);
                 return;
             }
 
             AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
             clip.name = "twoBells";
-            notificationSound = clip;           
+            notificationSound = clip;
 
-            logger.LogInfo("Audio loaded.");
+            LogInfo("Audio loaded.");
         }
 
         private static void LoadFishBadges()
         {
-            var fishBadgesPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "badges", "fish");
+            var fishBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "fish");
             int[] amountNums = { 25, 50, 100 };
 
             foreach (string fishName in FishCaughtUI.FishNames)
@@ -68,15 +66,15 @@ namespace sailadex
                 var fishBadgeName = caughtBadge;
                 var texture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
                 textures.Add(fishBadgeName, texture);
-                materials.Add(fishBadgeName, CreateMaterial(texture));                
+                materials.Add(fishBadgeName, CreateMaterial(texture));
             }
 
-            logger.LogInfo("Fishing badges loaded.");
+            LogInfo("Fishing badges loaded.");
         }
 
         private static void LoadPortBadges()
         {
-            var portBadgesPath = Path.Combine(Path.GetDirectoryName(SAD_Plugin.Instance.Info.Location), "assets", "badges", "ports");
+            var portBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "ports");
 
             foreach (string pbName in Region.AllBadgeNames)
             {
@@ -85,7 +83,7 @@ namespace sailadex
                 materials.Add(pbName, CreateMaterial(texture));
             }
 
-            logger.LogInfo("Port badges loaded.");
+            LogInfo("Port badges loaded.");
         }
 
         private static Texture2D LoadTexture(string path)
@@ -94,7 +92,7 @@ namespace sailadex
             var texture2D = new Texture2D(1, 1);
             if (array == null)
             {
-                logger.LogError($"Failed to load {path}");
+                LogError($"Failed to load {path}");
                 return texture2D;
             }
             ImageConversion.LoadImage(texture2D, array);

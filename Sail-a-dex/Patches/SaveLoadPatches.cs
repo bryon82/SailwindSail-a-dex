@@ -1,16 +1,14 @@
-﻿using BepInEx.Logging;
-using HarmonyLib;
+﻿using HarmonyLib;
 using ModSaveBackups;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static sailadex.SAD_Plugin;
 
 namespace sailadex
 {
     internal class SaveLoadPatches
     {
-        static readonly ManualLogSource logger = SAD_Plugin.logger;
-
         [HarmonyPatch(typeof(SaveLoadManager))]
         private class SaveLoadManagerPatches
         {
@@ -49,16 +47,16 @@ namespace sailadex
                     entry => entry.Value)
                 };
 
-                ModSave.Save(SAD_Plugin.Instance.Info, saveContainer);
+                ModSave.Save(Instance.Info, saveContainer);
             }
 
             [HarmonyPostfix]
             [HarmonyPatch("LoadModData")]
             public static void LoadModDataPatch()
             {
-                if (!ModSave.Load(SAD_Plugin.Instance.Info, out SailadexSaveContainer saveContainer))
+                if (!ModSave.Load(Instance.Info, out SailadexSaveContainer saveContainer))
                 { 
-                    logger.LogWarning("Save file loading failed. If this is the first time loading this save with this mod, this is normal.");
+                    LogWarning("Save file loading failed. If this is the first time loading this save with this mod, this is normal.");
                     return;
                 }
 
@@ -93,7 +91,7 @@ namespace sailadex
             {
                 if (!gameDict.ContainsKey(item.Key))
                 {
-                    logger.LogWarning($"LoadData: {item.Key} not found in game");
+                    LogWarning($"LoadData: {item.Key} not found in game");
                     continue;
                 }                
                 gameDict[item.Key] = item.Value;

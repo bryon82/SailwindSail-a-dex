@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.1] - 2025-05-07
+
+### Fixed
+- All ports visited notification bug.
+
+### Added
+- Handling of RandomEncounters settings fields changing to properties in the near future.
+
 ## [v1.5.0] - 2025-05-03
 
 ### Updated
@@ -9,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - Improve encapsulation overall.
 
 ### Added
-- Intense storm and fishing bonanza to StatsUI.
+- Intense storm and fishing bonanza encounters to StatsUI.
 - Dynamic add-remove of RandomEncounter stats.
 
 ### Changed

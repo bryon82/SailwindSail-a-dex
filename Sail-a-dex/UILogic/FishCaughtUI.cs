@@ -1,20 +1,20 @@
-﻿using BepInEx.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static sailadex.SAD_Plugin;
+using static sailadex.Configs;
 
 namespace sailadex
 {
     public class FishCaughtUI : MonoBehaviour
     {
         public static FishCaughtUI Instance { get; private set; }
-        static readonly ManualLogSource logger = SAD_Plugin.logger;
 
         public TextMesh[] _fishNameTMs;
         public TextMesh[] _caughtCountTMs;
         public Dictionary<string, GameObject> _fishBadgeGOs;
 
-        public Dictionary<string, int> _caughtFish;        
+        public Dictionary<string, int> _caughtFish;
         public Dictionary<string, bool> _fishBadges;
 
         private static readonly int[] FISH_BADGE_AMOUNTS = { 25, 50, 100 };
@@ -81,12 +81,12 @@ namespace sailadex
             var fishName = fish.GetComponent<ShipItemFood>().name;
             if (!_caughtFish.ContainsKey(fishName))
             {
-                logger.LogWarning($"Fish caught {fishName} is not in fish caught log");
+                LogWarning($"Fish caught {fishName} is not in fish caught log");
                 return;
             }
             _caughtFish[fishName]++;
             CheckBadges(fishName);
-            logger.LogDebug($"Caught: {fishName}");
+            LogDebug($"Caught: {fishName}");
         }
 
         public void UpdatePage()
@@ -101,7 +101,7 @@ namespace sailadex
             int catchSum = 0;
             foreach (KeyValuePair<string, int> fish in _caughtFish)
             {
-                if (SAD_Plugin.fishNamesHidden.Value)
+                if (fishNamesHidden.Value)
                     _fishNameTMs[i].text = fish.Value > 0 ? fish.Key : "???";
                 else
                     _fishNameTMs[i].text = fish.Key;
@@ -116,7 +116,7 @@ namespace sailadex
         public void CheckBadges(string fishName)
         {
             CheckIndividualFishBadges(fishName);
-            CheckAllFishBadges();            
+            CheckAllFishBadges();
         }
 
         public void CheckIndividualFishBadges(string fishName)
@@ -125,7 +125,7 @@ namespace sailadex
             {
                 if (!_fishBadges[$"{fishName}{amt}"] && _caughtFish[fishName] >= amt)
                 {
-                    if (SAD_Plugin.notificationsEnabled.Value)
+                    if (notificationsEnabled.Value)
                         NotificationUiQueue.Instance.QueueNotification($"Caught {amt} {fishName}");
                     _fishBadges[$"{fishName}{amt}"] = true;
                 }
@@ -139,7 +139,7 @@ namespace sailadex
             {
                 if (!_fishBadges[TotalFishBadgeNames[i]] && catchSum >= TOTAL_FISH_BADGE_AMOUNTS[i])
                 {
-                    if (SAD_Plugin.notificationsEnabled.Value)
+                    if (notificationsEnabled.Value)
                         NotificationUiQueue.Instance.QueueNotification($"Caught {TOTAL_FISH_BADGE_AMOUNTS[i]} fish");
                     _fishBadges[TotalFishBadgeNames[i]] = true;
                 }
@@ -147,7 +147,7 @@ namespace sailadex
 
             if (!_fishBadges[TotalFishBadgeNames[3]] && !_caughtFish.Values.Any(v => v.Equals(0)))
             {
-                if (SAD_Plugin.notificationsEnabled.Value)
+                if (notificationsEnabled.Value)
                     NotificationUiQueue.Instance.QueueNotification($"Caught all fish");
                 _fishBadges[TotalFishBadgeNames[3]] = true;
             }

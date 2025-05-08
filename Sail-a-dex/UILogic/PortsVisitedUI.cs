@@ -1,14 +1,14 @@
-﻿using BepInEx.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static sailadex.SAD_Plugin;
+using static sailadex.Configs;
 
 namespace sailadex
 {
     public class PortsVisitedUI : MonoBehaviour
     {
         public static PortsVisitedUI Instance { get; private set; }
-        private static readonly ManualLogSource logger = SAD_Plugin.logger;
 
         private TextMesh[] _portNameTMs;
         private TextMesh[] _portVisitedTMs;
@@ -17,8 +17,8 @@ namespace sailadex
         private Dictionary<string, bool> _portBadges;
 
         public IReadOnlyDictionary<string, bool> VisitedPorts => _visitedPorts;
-        public IReadOnlyDictionary<string, bool> PortBadges => _portBadges;        
-                
+        public IReadOnlyDictionary<string, bool> PortBadges => _portBadges;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -45,7 +45,7 @@ namespace sailadex
         {
             if (!_visitedPorts.ContainsKey(portName))
             {
-                logger.LogWarning($"Attempted to register visit to unknown port: {portName}");
+                LogWarning($"Attempted to register visit to unknown port: {portName}");
                 return;
             }
 
@@ -55,7 +55,7 @@ namespace sailadex
                 CheckBadges();
             }
 
-            logger.LogDebug($"Visited: {portName}");
+            LogDebug($"Visited: {portName}");
         }
 
         public void UpdatePage()
@@ -71,7 +71,7 @@ namespace sailadex
             {
                 if (i >= _portNameTMs.Length || i >= _portVisitedTMs.Length)
                 {
-                    logger.LogWarning("Not enough TextMesh objects to display all ports");
+                    LogWarning("Not enough TextMesh objects to display all ports");
                     break;
                 }
 
@@ -83,7 +83,7 @@ namespace sailadex
 
         private string GetPortDisplayName(string portName, bool visited)
         {
-            return SAD_Plugin.portNamesHidden.Value && !visited ? "???" : portName;
+            return portNamesHidden.Value && !visited ? "???" : portName;
         }
 
         public void CheckBadges()
@@ -106,11 +106,11 @@ namespace sailadex
 
         private void ShowBadgeNotification(string region)
         {
-            if (!SAD_Plugin.notificationsEnabled.Value)
+            if (!notificationsEnabled.Value)
                 return;
 
-            string message = name != "all"
-                ? $"Visited all {region} ports"
+            string message = region != "all"
+                ? $"Visited all\n{region} ports"
                 : $"Visited all ports";
 
             NotificationUiQueue.Instance.QueueNotification(message);
@@ -122,14 +122,14 @@ namespace sailadex
             {
                 if (!_portBadgeGOs.ContainsKey(badge.Key))
                 {
-                    logger.LogWarning($"Missing GameObject for badge: {badge.Key}");
+                    LogWarning($"Missing GameObject for badge: {badge.Key}");
                     continue;
                 }
 
                 _portBadgeGOs[badge.Key].SetActive(badge.Value);
             }
         }
-        
+
         public void SetUIElems(TextMesh[] portNameTMs, TextMesh[] portVisitedTMs, Dictionary<string, GameObject> portBadgeGOs)
         {
             _portNameTMs = portNameTMs;
@@ -145,6 +145,6 @@ namespace sailadex
         public void LoadPortBadges(Dictionary<string, bool> portBadges)
         {
             SaveLoadPatches.LoadDictionary(portBadges, _portBadges);
-        }        
+        }
     }
 }

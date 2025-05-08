@@ -1,22 +1,22 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using static sailadex.SAD_Plugin;
+using static sailadex.Configs;
 
 namespace sailadex
 {
     public class StatsUI : MonoBehaviour
     {
         public static StatsUI Instance { get; private set; }
-        private static readonly ManualLogSource logger = SAD_Plugin.logger;
 
         private Dictionary<string, TextMesh> _statTMs;
         private Dictionary<string, float> _floatStats;
         private Dictionary<string, int> _intStats;
-        private Dictionary<string, bool[]> _boolArrayStats;        
+        private Dictionary<string, bool[]> _boolArrayStats;
 
         private Vector3 lastPosition;
         private string lastPortVisited;
@@ -53,13 +53,13 @@ namespace sailadex
 
         private static readonly Dictionary<string, Func<bool>> _randomEncounterStats = new Dictionary<string, Func<bool>>
         {
-            { "FlotsamEncounters", () => RandomEncounters.FlotsamEnabled },
-            { "DenseFogEncounters", () => RandomEncounters.DenseFogEnabled },
-            { "SeaLifeEncounters", () => RandomEncounters.IsSeaLifeEnabled },
-            { "FishingBonanzaEncounters", () => RandomEncounters.FishingBonanzaEnabled },
-            { "IntenseStormEncounters", () => RandomEncounters.IntenseStormEnabled }
+            { "FlotsamEncounters", () => RandomEncounters.IsFlotsamEnabled },
+            { "DenseFogEncounters", () => RandomEncounters.IsDenseFogEnabled },
+            { "SeaLifeEncounters", () => RandomEncounters.IsSeaLifeModEnabled },
+            { "FishingBonanzaEncounters", () => RandomEncounters.IsFishingBonanzaEnabled },
+            { "IntenseStormEncounters", () => RandomEncounters.IsIntenseStormEnabled }
         };
-        
+
         public static IReadOnlyDictionary<string, Func<bool>> RandomEncounterStats => _randomEncounterStats;
         public static List<float> RandomEncounterStatYPos { get; set; }
 
@@ -74,8 +74,8 @@ namespace sailadex
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;            
-            
+            Instance = this;
+
             _floatStats = new Dictionary<string, float>();
             _intStats = new Dictionary<string, int>();
             _boolArrayStats = new Dictionary<string, bool[]>();
@@ -98,7 +98,7 @@ namespace sailadex
                 _intStats.Add(stat, 0);
                 _intStats.Add($"current{stat}", 0);
                 _intStats.Add($"record{stat}", 0);
-            }            
+            }
 
             foreach (string transit in Region.TransitCodes)
             {
@@ -182,8 +182,8 @@ namespace sailadex
                     TrackRegionUnderway(region.Code);
                     return;
                 }
-            }            
-        }        
+            }
+        }
 
         private void ResetUnderwayTimers()
         {
@@ -214,7 +214,7 @@ namespace sailadex
 
             _floatStats["UnderwayTime"] = 0f;
             _intStats["UnderwayDay"] = 0;
-        }        
+        }
 
         public void RegisterMoored(string islandName)
         {
@@ -222,13 +222,12 @@ namespace sailadex
                 return;
 
             UpdateStats();
-            UpdateUnderwayRecords();            
+            UpdateUnderwayRecords();
 
-            // fastest transit
             if (islandName.Equals("island 18 M (HappyBay)")) 
                 return;
 
-            ProcessRegionalArrival(islandName);                   
+            ProcessRegionalArrival(islandName);
         }
 
         private void ProcessRegionalArrival(string islandName)
@@ -251,8 +250,9 @@ namespace sailadex
         private void CheckPossibleTransit(string departureRegion, string arrivalRegion, int arrivalIndex)
         {
             string transitKey = departureRegion + arrivalRegion;
-            bool hasUnderwayTime = _floatStats[$"{departureRegion}UnderwayTime"] > 0f ||
-                                  _intStats[$"{departureRegion}UnderwayDay"] > 0;
+            bool hasUnderwayTime =
+                _floatStats[$"{departureRegion}UnderwayTime"] > 0f ||
+                _intStats[$"{departureRegion}UnderwayDay"] > 0;
 
             bool alreadyTransited = _boolArrayStats[$"{departureRegion}Transit"][arrivalIndex];
 
@@ -282,8 +282,8 @@ namespace sailadex
             {
                 _intStats[$"record{transitCode}TransitDay"] = transitDay;
                 _floatStats[$"record{transitCode}TransitTime"] = transitTime;
-                
-                if (SAD_Plugin.notificationsEnabled.Value)
+
+                if (notificationsEnabled.Value)
                     NotificationUiQueue.Instance.QueueNotification($"Fastest {FormatTransitName(transitCode)} time");
             }
             _boolArrayStats[$"{underwayKey}Transit"][destInt] = true;
@@ -291,7 +291,7 @@ namespace sailadex
 
         public void PlayerTeleported()
         {
-            logger.LogInfo("Player teleported, resetting current transits");
+            LogInfo("Player teleported, resetting current transits");
             foreach (Region region in Region.AllRegions)
             {
                 int j = 0;
@@ -305,11 +305,11 @@ namespace sailadex
         }
 
         #endregion
-        
+
         #region distance
 
         public void TrackDistance()
-        {                     
+        {
             var globePosition = FloatingOriginManager.instance.GetGlobeCoords(GameState.currentBoat);
             var currentPosition = new Vector3(globePosition.x, 0f, globePosition.z);
             if (lastPosition == Vector3.zero)
@@ -357,9 +357,9 @@ namespace sailadex
             if (lastStorm == currentStorm)
                 return;
 
-            logger.LogDebug($"Weathering {currentStorm}");
+            LogDebug($"Weathering {currentStorm}");
             IncrementIntStat("StormsWeathered");
-            lastStorm = currentStorm;            
+            lastStorm = currentStorm;
         }
 
         public void ClearLastStorm()
@@ -367,7 +367,7 @@ namespace sailadex
             if (lastStorm.IsNullOrWhiteSpace())
                 return;
 
-            logger.LogDebug($"Storm cleared");
+            LogDebug($"Storm cleared");
             lastStorm = string.Empty;
         }
 
@@ -426,7 +426,7 @@ namespace sailadex
                         break;
                     case "MilesSailed":
                         _statTMs[stat].text = FormatStatName(stat);
-                        if (SAD_Plugin.updateMilesSailed.Value == "realtime")
+                        if (updateMilesSailed.Value == "realtime")
                             _statTMs["currentMilesSailed"].text = $"{_floatStats["currentMilesSailed"]:#,##0.#}";
                         else
                             _statTMs["currentMilesSailed"].text = $"{_floatStats["MilesSailed"]:#,##0.#}";
@@ -453,7 +453,7 @@ namespace sailadex
                 _statTMs[stat].text = FormatStatName(stat);
                 _statTMs[$"current{stat}"].text = $"{_intStats[$"current{stat}"]:#,##0}";
             }
-        }        
+        }
 
         private void UpdateTransitTexts()
         {
@@ -495,11 +495,11 @@ namespace sailadex
 
         private void PositionRandomEnounterStat(string stat, Queue<float> posQueue)
         {
-            if (RandomEncounters.pluginInstance == null || !_randomEncounterStats[stat]())
+            if (RE_PluginInstance == null || !_randomEncounterStats[stat]())
             {
                 _statTMs[stat].gameObject.SetActive(false);
             }
-            else if (RandomEncounters.pluginInstance != null && _randomEncounterStats[stat]())
+            else if (RE_PluginInstance != null && _randomEncounterStats[stat]())
             {
                 _statTMs[stat].gameObject.SetActive(true);
                 var pos = _statTMs[stat].transform.localPosition;
@@ -525,18 +525,17 @@ namespace sailadex
         }
 
         public void LoadBoolArrayStats(Dictionary<string, bool[]> boolArrayStats)
-        {            
+        {
             foreach (var stat in boolArrayStats)
             {
                 if (!_boolArrayStats.ContainsKey(stat.Key))
                 {
-                    logger.LogWarning($"Attempted to set unknown boolArrayStat: {stat.Key}");
+                    LogWarning($"Attempted to set unknown boolArrayStat: {stat.Key}");
                     continue;
                 }
-                
+
                 _boolArrayStats[stat.Key] = (bool[])stat.Value.Clone();
             }
-            
         }
 
         //Testing

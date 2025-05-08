@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static sailadex.Configs;
 
 namespace sailadex
 {
@@ -24,7 +25,7 @@ namespace sailadex
             _timer = 0f;
 
             _audioSource = gameObject.AddComponent<AudioSource>();
-            _audioSource.volume = SAD_Plugin.notificationSoundVolume.Value;
+            _audioSource.volume = notificationSoundVolume.Value;
             _audioSource.spatialBlend = 1.0f;
             _audioSource.minDistance = 10f;
             _audioSource.maxDistance = 20f;
@@ -42,7 +43,7 @@ namespace sailadex
                 if (_queue.Count > 0) 
                 {
                     NotificationUi.instance.ShowNotification(_queue.Dequeue());
-                    if (SAD_Plugin.notificationSoundVolume.Value > 0f)
+                    if (notificationSoundVolume.Value > 0f)
                         _audioSource.PlayOneShot(AssetsLoader.notificationSound);
                     _timer = TIMER_DURATION;
                 }
