@@ -65,7 +65,7 @@ namespace sailadex
             {
                 ("GenerateFlotsam", "FlotsamCountPatch"),
                 ("GenerateDenseFog", "DenseFogCountPatch"),
-                ("GenerateWhale", "SeaLifeCountPatch"),
+                ("GenerateWhales", "SeaLifeCountPatch"),
                 ("GenerateFishingBonanza", "FishingBonanzaCountPatch"),
                 ("GenerateIntenseStorm", "IntenseStormCountPatch")
             };
@@ -73,6 +73,8 @@ namespace sailadex
             foreach (var (originalMethodName, patchMethodName) in methodsToPatch)
             {
                 MethodInfo original = AccessTools.Method(encounterGeneratorClass, originalMethodName);
+                if (original == null && originalMethodName.Equals("GenerateWhales"))                
+                    original = AccessTools.Method(encounterGeneratorClass, "GenerateWhale");                
                 MethodInfo patch = AccessTools.Method(typeof(EncounterGeneratorPatches), patchMethodName);
                 HarmonyInstance.Patch(original, new HarmonyMethod(patch));
             }

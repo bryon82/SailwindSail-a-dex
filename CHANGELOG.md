@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.2] - 2025-05-08
+
+### Fixed
+- Bug introduced by RandomEncounters method name change.
+
+### Updated
+- Asset loader improving startup time
+
 ## [v1.5.1] - 2025-05-07
 
 ### Fixed

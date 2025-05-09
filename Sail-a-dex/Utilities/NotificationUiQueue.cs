@@ -44,7 +44,7 @@ namespace sailadex
                 {
                     NotificationUi.instance.ShowNotification(_queue.Dequeue());
                     if (notificationSoundVolume.Value > 0f)
-                        _audioSource.PlayOneShot(AssetsLoader.notificationSound);
+                        _audioSource.PlayOneShot(AssetsLoader.NotificationSound);
                     _timer = TIMER_DURATION;
                 }
             }

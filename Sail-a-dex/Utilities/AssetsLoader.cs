@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -8,95 +10,158 @@ namespace sailadex
 {
     internal class AssetsLoader
     {
-        public static AudioClip notificationSound;
-        public static Dictionary<string, Material> materials;
-        public static Dictionary<string, Texture2D> textures;
+        public static bool BadgesLoaded => _fishBadgesLoaded && _portBadgesLoaded;
+        public static AudioClip NotificationSound { get; private set; }
+        public static Dictionary<string, Material> Materials { get; private set; }
+
+        private static Dictionary<string, Texture2D> _textures;
+        private static bool _fishBadgesLoaded;
+        private static bool _portBadgesLoaded;
 
         public static void Start()
         {
-            materials = new Dictionary<string, Material>();
-            textures = new Dictionary<string, Texture2D>();
+            Materials = new Dictionary<string, Material>();
+            _textures = new Dictionary<string, Texture2D>();
 
-            LoadAudio();
-            LoadFishBadges();
-            LoadPortBadges();
+            Instance.StartCoroutine(LoadAssetsAsync());
         }
 
-        private static void LoadAudio()
+        private static IEnumerator LoadAssetsAsync()
+        {
+            var audioCoroutine = Instance.StartCoroutine(LoadAudio());
+            var fishBadgeCoroutine = Instance.StartCoroutine(LoadFishBadges());
+            var portBadgeCoroutine = Instance.StartCoroutine(LoadPortBadges());
+
+            yield return audioCoroutine;
+            yield return fishBadgeCoroutine;
+            yield return portBadgeCoroutine;
+
+            LogInfo("All assets loaded.");
+        }
+
+        private static IEnumerator LoadAudio()
         {
             var clipPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "sounds", "twoBells.wav");
-            var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV);
+            using (var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV))
+            {                
+                yield return webRequest.SendWebRequest();
 
-            webRequest.SendWebRequest();
+                if (webRequest.isNetworkError || webRequest.isHttpError)
+                {
+                    LogError(webRequest.error);
+                    yield break;
+                }
 
-            while (!webRequest.isDone)
-                _ = 0;
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
+                clip.name = "twoBells";
+                NotificationSound = clip;
 
-            if (webRequest.isNetworkError)
-            {
-                LogError(webRequest.error);
-                return;
+                LogInfo("Audio loaded.");
             }
-
-            AudioClip clip = DownloadHandlerAudioClip.GetContent(webRequest);
-            clip.name = "twoBells";
-            notificationSound = clip;
-
-            LogInfo("Audio loaded.");
         }
 
-        private static void LoadFishBadges()
+        private static IEnumerator LoadFishBadges()
         {
             var fishBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "fish");
             int[] amountNums = { 25, 50, 100 };
+
+            List<Coroutine> textureCoroutines = new List<Coroutine>();
 
             foreach (string fishName in FishCaughtUI.FishNames)
             {
                 for (int i = 0; i < 3; i++)
                 {
                     var fishBadgeName = fishName + amountNums[i];
-                    var texture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
-                    textures.Add(fishBadgeName, texture);
-                    materials.Add(fishBadgeName, CreateMaterial(texture));
+                    var path = Path.Combine(fishBadgesPath, fishBadgeName + ".png");
+                    textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
                 }
             }
 
             foreach (string caughtBadge in FishCaughtUI.TotalFishBadgeNames)
             {
                 var fishBadgeName = caughtBadge;
-                var texture = LoadTexture(Path.Combine(fishBadgesPath, fishBadgeName + ".png"));
-                textures.Add(fishBadgeName, texture);
-                materials.Add(fishBadgeName, CreateMaterial(texture));
+                var path = Path.Combine(fishBadgesPath, fishBadgeName + ".png");
+                textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
             }
 
+            foreach (var coroutine in textureCoroutines)
+            {
+                yield return coroutine;
+            }
+
+            _fishBadgesLoaded = true;
             LogInfo("Fishing badges loaded.");
         }
 
-        private static void LoadPortBadges()
+        private static IEnumerator LoadPortBadges()
         {
             var portBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "ports");
 
+            List<Coroutine> textureCoroutines = new List<Coroutine>();
+
             foreach (string pbName in Region.AllBadgeNames)
             {
-                var texture = LoadTexture(Path.Combine(portBadgesPath, pbName + ".png"));
-                textures.Add(pbName, texture);
-                materials.Add(pbName, CreateMaterial(texture));
+                var path = Path.Combine(portBadgesPath, pbName + ".png");
+                textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, pbName)));
             }
 
+            foreach (var coroutine in textureCoroutines)
+            {
+                yield return coroutine;
+            }
+
+            _portBadgesLoaded = true;
             LogInfo("Port badges loaded.");
         }
 
-        private static Texture2D LoadTexture(string path)
+        private static IEnumerator LoadTexture(string path, string textureName)
         {
-            var array = File.Exists(path) ? File.ReadAllBytes(path) : null;
-            var texture2D = new Texture2D(1, 1);
-            if (array == null)
+            if (!File.Exists(path))
             {
-                LogError($"Failed to load {path}");
-                return texture2D;
+                LogError($"File not found: {path}");
+                yield break;
             }
-            ImageConversion.LoadImage(texture2D, array);
-            return texture2D;
+
+            var texture2D = new Texture2D(1, 1);            
+            byte[] fileData = null;
+            
+            yield return Instance.StartCoroutine(LoadFile(path, result => fileData = result));
+
+            if (fileData != null && fileData.Length > 0)
+            {
+                bool success = ImageConversion.LoadImage(texture2D, fileData);
+
+                if (!success)
+                {
+                    LogError($"Failed to load texture from bytes: {path}");
+                    yield break;
+                }
+                
+                _textures[textureName] = texture2D;
+                Materials[textureName] = CreateMaterial(texture2D);
+            }
+        }
+
+        private static IEnumerator LoadFile(string path, Action<byte[]> onComplete )
+        {
+            byte[] result = null;
+
+            yield return null;
+
+            using (UnityWebRequest www = UnityWebRequest.Get($"file://{path}"))
+            {
+                yield return www.SendWebRequest();
+
+                if (www.isNetworkError || www.isHttpError)
+                {
+                    LogError(www.error);
+                    yield break;
+                }                
+                
+                result = www.downloadHandler.data;                
+            }
+
+            onComplete(result);
         }
 
         private static Material CreateMaterial(Texture2D tex)

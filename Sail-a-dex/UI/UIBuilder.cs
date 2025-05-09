@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static sailadex.SAD_Plugin;
@@ -107,8 +108,7 @@ namespace sailadex
                 for (int j = 0; j < badgeNums.Length; j++)
                 {
                     var badgeName = newFishCaughtTextGO.name + badgeNums[j];
-                    var badge = CreateBadgeObject(badgeName, newFishCaughtTextGO.transform, new Vector3(12f, 12f, 1f), new Vector3(75f + j * 13f, 0f, 0f));
-                    badgeGOs.Add(badgeName, badge);
+                    Instance.StartCoroutine(CreateBadgeObject(badgeGOs, badgeName, newFishCaughtTextGO.transform, new Vector3(12f, 12f, 1f), new Vector3(75f + j * 13f, 0f, 0f)));
                 }
             }
 
@@ -130,8 +130,7 @@ namespace sailadex
             for (int j = 0; j < totalCaughtBadges.Length; j++)
             {
                 var badgeName = totalCaughtBadges[j];
-                var badge = CreateBadgeObject(badgeName, totalCaughtTextGO.transform, new Vector3(15f, 15f, 1f), new Vector3(15f + j * 20f, -13f, 0f));
-                badgeGOs.Add(badgeName, badge);
+                Instance.StartCoroutine(CreateBadgeObject(badgeGOs, badgeName, totalCaughtTextGO.transform, new Vector3(15f, 15f, 1f), new Vector3(15f + j * 20f, -13f, 0f)));
             }
 
             Object.Destroy(fishCaughtTextGO);
@@ -207,22 +206,18 @@ namespace sailadex
                     portVisitedTM.transform.localPosition = new Vector3(portVisitedTMTemplate.transform.localPosition[0], portVisitedTMTemplate.transform.localPosition[1] - 7.5f * i, portVisitedTMTemplate.transform.localPosition[2]);
                     portVisitedTM.transform.localRotation = portVisitedTMTemplate.transform.localRotation;
                     portVisitedTM.transform.localScale = portVisitedTMTemplate.transform.localScale;
-                    portVisitedTM.name = "visited port" + (i + 1);
+                    portVisitedTM.name = $"visited port{(i + 1)}";
 
                     portNameTMs[portVisitedIndex] = portNameTM.GetComponent<TextMesh>();
                     portVisitedTMs[portVisitedIndex] = portVisitedTM.GetComponent<TextMesh>();
                     portVisitedIndex++;
                 }
 
-                var badgeName = portsVisitedGO.name + "Badge";
-                var badge = CreateBadgeObject(badgeName, portsVisitedGO, new Vector3(15f, 15f, 1f), new Vector3(-8f, -2f, 0f));
-                badgeGOs.Add(badgeName, badge);
+                var badgeName = $"{portsVisitedGO.name}Badge";
+                Instance.StartCoroutine(CreateBadgeObject(badgeGOs, badgeName, portsVisitedGO, new Vector3(15f, 15f, 1f), new Vector3(-8f, -2f, 0f)));
             }
 
-            var allPortsBN = "allPortsBadge";
-            var allPortsBadge = CreateBadgeObject(allPortsBN, portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.22f, -0.007f));
-            allPortsBadge.transform.localEulerAngles = new Vector3(0f, 180f, 0f);
-            badgeGOs.Add(allPortsBN, allPortsBadge);
+            Instance.StartCoroutine(CreateBadgeObject(badgeGOs, "allPortsBadge", portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.22f, -0.007f)));            
 
             PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 
@@ -367,18 +362,22 @@ namespace sailadex
 
         #endregion
 
-        private static GameObject CreateBadgeObject(string name, Transform parent, Vector3 scale, Vector3 position)
+        private static IEnumerator CreateBadgeObject(Dictionary<string, GameObject> badgeGOs, string name, Transform parent, Vector3 scale, Vector3 position)
         {
+            yield return new WaitUntil(() => AssetsLoader.BadgesLoaded);
             var badge = GameObject.CreatePrimitive(PrimitiveType.Quad);
             badge.layer = 5;
-            Object.Destroy(badge.GetComponent<MeshCollider>());
-            badge.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
             badge.transform.SetParent(parent, false);
             badge.transform.localScale = scale;
             badge.transform.localPosition = position;
             badge.name = name;
-            badge.GetComponent<MeshRenderer>().material = AssetsLoader.materials[name];
-            return badge;
+            if (name.Equals("allPortsBadge"))            
+                badge.transform.localEulerAngles = new Vector3(0f, 180f, 0f);            
+            var meshRenderer = badge.GetComponent<MeshRenderer>();
+            meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            meshRenderer.material = AssetsLoader.Materials[name];
+            Object.Destroy(badge.GetComponent<MeshCollider>());
+            badgeGOs.Add(name, badge);
         }
     }
 }

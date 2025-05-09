@@ -83,9 +83,9 @@ namespace sailadex
             public static void StartPatch(GameObject ___modeButtons, GameObject ___reputationUI)
             {
                 bookmarks = UIBuilder.MakeBookmarks(___modeButtons);
-                fishCaughtUI = UIBuilder.MakeFishCaughtUI(___reputationUI);
-                portsVisitedUI = UIBuilder.MakePortsVisitedUI(___reputationUI);
                 statsUI = UIBuilder.MakeStatsUI(___reputationUI);
+                portsVisitedUI = UIBuilder.MakePortsVisitedUI(___reputationUI);
+                fishCaughtUI = UIBuilder.MakeFishCaughtUI(___reputationUI);
             }
         }
 
