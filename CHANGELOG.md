@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.3] - 2025-05-13
+
+### Fixed
+- Shimmertail count not increasing after 0.31 update. Name is now blue shimmertail.
+
 ## [v1.5.2] - 2025-05-08
 
 ### Fixed

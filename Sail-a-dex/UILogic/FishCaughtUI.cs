@@ -25,7 +25,7 @@ namespace sailadex
             "templefish",
             "sunspot fish",
             "tuna",
-            "shimmertail",
+            "blue shimmertail",
             "salmon",
             "eel",
             "blackfin hunter",
@@ -170,12 +170,37 @@ namespace sailadex
 
         public void LoadCaughtFish(Dictionary<string, int> caughtFish)
         {
+            ShimmertailNameFix(caughtFish);
             SaveLoadPatches.LoadDictionary(caughtFish, _caughtFish);
         }
 
         public void LoadFishBadges(Dictionary<string, bool> fishBadges)
         {
+            ShimmertailNameFix(fishBadges);
             SaveLoadPatches.LoadDictionary(fishBadges, _fishBadges);
+        }
+
+        private void ShimmertailNameFix(Dictionary<string, int> caughtFish)
+        {
+            if (caughtFish.ContainsKey("shimmertail"))
+            {
+                caughtFish.Add("blue shimmertail", caughtFish["shimmertail"]);
+                caughtFish.Remove("shimmertail");
+                LogInfo($"Shimmertail converted to blue shimmertail in caught counts");
+            }
+        }
+
+        private void ShimmertailNameFix(Dictionary<string, bool> fishBadges)
+        {
+            foreach (var amt in FISH_BADGE_AMOUNTS)
+            {
+                if (fishBadges.ContainsKey($"shimmertail{amt}"))
+                {
+                    fishBadges.Add($"blue shimmertail{amt}", fishBadges[$"shimmertail{amt}"]);
+                    fishBadges.Remove($"shimmertail{amt}");
+                    LogInfo($"Shimmertail{amt} converted to blue shimmertail{amt} in fish badges");
+                }
+            }            
         }
     }
 }
