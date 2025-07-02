@@ -8,9 +8,9 @@ namespace sailadex
 {
     internal class UIBuilder
     {
-        internal const MissionListMode fishCaught = (MissionListMode)5;
-        internal const MissionListMode portsVisited = (MissionListMode)6;
-        internal const MissionListMode stats = (MissionListMode)7;
+        internal const MissionListMode FISH_CAUGHT = (MissionListMode)5;
+        internal const MissionListMode PORTS_VISITED = (MissionListMode)6;
+        internal const MissionListMode STATS = (MissionListMode)7;
 
         private const int FISH_CAUGHT_FONT_SIZE = 50;
         private const int STAT_HEADER_FONT_SIZE = 45;
@@ -30,7 +30,7 @@ namespace sailadex
             bookmarkFishCaught.name = "bookmark fish caught";
             bookmarkFishCaught.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "fish caught";
             var fcGPButtonLogMode = bookmarkFishCaught.GetComponent<GPButtonLogMode>();
-            Traverse.Create(fcGPButtonLogMode).Field("mode").SetValue(fishCaught);
+            Traverse.Create(fcGPButtonLogMode).Field("mode").SetValue(FISH_CAUGHT);
             Object.Destroy(bookmarkFishCaught.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkFishCaught);
 
@@ -41,7 +41,7 @@ namespace sailadex
             bookmarkPortsVisited.name = "bookmark ports visited";
             bookmarkPortsVisited.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "ports visited";
             var pvGPButtonLogMode = bookmarkPortsVisited.GetComponent<GPButtonLogMode>();
-            Traverse.Create(pvGPButtonLogMode).Field("mode").SetValue(portsVisited);
+            Traverse.Create(pvGPButtonLogMode).Field("mode").SetValue(PORTS_VISITED);
             Object.Destroy(bookmarkPortsVisited.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkPortsVisited);
 
@@ -52,7 +52,7 @@ namespace sailadex
             bookmarkStats.name = "bookmark stats";
             bookmarkStats.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "stats & transit";
             var sGPButtonLogMode = bookmarkStats.GetComponent<GPButtonLogMode>();
-            Traverse.Create(sGPButtonLogMode).Field("mode").SetValue(stats);
+            Traverse.Create(sGPButtonLogMode).Field("mode").SetValue(STATS);
             Object.Destroy(bookmarkStats.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkStats);
 
@@ -173,9 +173,15 @@ namespace sailadex
             var portVisitedTMs = new TextMesh[Region.AllPorts.Count];
             var badgeGOs = new Dictionary<string, GameObject>();
             int portVisitedIndex = 0;
-            int[] numPorts = { 7, 6, 10, 4 };
+            int[] numPorts = 
+            { 
+                Region.AlAnkh.Ports.Count,
+                Region.EmeraldArchipelago.Ports.Count,
+                Region.Aestrin.Ports.Count,
+                Region.FireFishLagoon.Ports.Count
+            };
 
-            for (int r = 0; r < 4; r++)
+            for (int r = 0; r < numPorts.Length; r++)
             {
                 var portsVisitedGO = portsVisitedUI.transform.GetChild(r);
                 Object.Destroy(portsVisitedGO.GetChild(1).gameObject);

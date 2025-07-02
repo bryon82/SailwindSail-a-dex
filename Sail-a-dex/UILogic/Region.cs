@@ -48,7 +48,7 @@ namespace sailadex
                     "Albacore Town",
                     "Alchemist's Island",
                     "Al'Ankh Academy",
-                    "Oasis"
+                    "Oasis",
                 },
                 new List<string>
                 {
@@ -78,7 +78,10 @@ namespace sailadex
                     "Crab Beach",
                     "New Port",
                     "Sage Hills",
-                    "Serpent Isle"
+                    "Serpent Isle",
+                    "Dead Cove",
+                    "Turtle Island",
+                    //"Pondering Peak" not a port
                 },
                 new List<string>
                 {
@@ -87,7 +90,10 @@ namespace sailadex
                     "island 11 E (crab beach)",
                     "island 12 E (New Port)",
                     "island 13 E (Sage Hills)",
-                    "island 22 E (serpent isle)"
+                    "island 22 E (serpent isle)",
+                    "island 37 E (swamp)",
+                    "island 38 E (jungle)",
+                    "island 39 E (onsen)",
                 }
             );
 
@@ -109,7 +115,7 @@ namespace sailadex
                     "Aestra Abbey",
                     "Fey Valley",
                     "Happy Bay",
-                    "Chronos"
+                    "Chronos",
                 },
                 new List<string>
                 {
@@ -123,7 +129,7 @@ namespace sailadex
                     "island 34 M monastery",
                     "island 35 M valley",
                     "island 23 M oracle",
-                    "island 25 (chronos)"
+                    "island 25 (chronos)",
                 }
             );
 
@@ -139,7 +145,7 @@ namespace sailadex
                     "Kicia Bay",
                     "Fire Fish Town",
                     "On'na",
-                    "Sen'na"
+                    "Sen'na",
                 },
                 new List<string>
                 {
@@ -147,7 +153,7 @@ namespace sailadex
                     "island 27 Lagoon Shipyard",
                     "island 28 Lagoon Senna",
                     "island 29 Lagoon Onna",
-                    "island 31 Lagoon Fisherman"
+                    "island 31 Lagoon Fisherman",
                 }
             );   
 

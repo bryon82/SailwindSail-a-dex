@@ -63,15 +63,15 @@ namespace sailadex
                 statsUI.SetActive(false);
                 switch (mode)
                 {
-                    case UIBuilder.fishCaught:
+                    case UIBuilder.FISH_CAUGHT:
                         fishCaughtUI.SetActive(true);
                         FishCaughtUI.Instance.UpdatePage();
                         break;
-                    case UIBuilder.portsVisited:
+                    case UIBuilder.PORTS_VISITED:
                         portsVisitedUI.SetActive(true);
                         PortsVisitedUI.Instance.UpdatePage();
                         break;
-                    case UIBuilder.stats:
+                    case UIBuilder.STATS:
                         statsUI.SetActive(true);
                         StatsUI.Instance.UpdatePage();
                         break;
