@@ -339,6 +339,8 @@ namespace sailadex
 
         public void IncrementIntStat(string statName)
         {
+            if (!_intStats.ContainsKey($"current{statName}"))
+                _intStats.Add($"current{statName}", 0);
             _intStats[$"current{statName}"]++;
         }
 
