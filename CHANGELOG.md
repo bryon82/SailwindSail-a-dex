@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.5] - 2025-08-06
+
+### Fixed
+- Bug when loading a game, turning back on an encounter type from random encounters, and then triggering that encounter.
+
 ## [v1.5.4] - 2025-05-13
 
 ### Added
