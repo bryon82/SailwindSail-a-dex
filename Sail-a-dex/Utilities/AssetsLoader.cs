@@ -18,6 +18,24 @@ namespace sailadex
         private static bool _fishBadgesLoaded;
         private static bool _portBadgesLoaded;
 
+        private static readonly List<string> assetPaths = new List<string>() {
+            Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "Assets"),
+            Path.Combine(Path.GetDirectoryName(Instance.Info.Location))
+        };
+
+        public static string FindAssetPath(string fileName)
+        {
+            foreach (string basePath in assetPaths)
+            {
+                string fullPath = Path.Combine(basePath, fileName);
+                if (File.Exists(fullPath))
+                {
+                    return fullPath;
+                }
+            }
+            return null;
+        }
+
         public static void Start()
         {
             Materials = new Dictionary<string, Material>();
@@ -41,7 +59,7 @@ namespace sailadex
 
         private static IEnumerator LoadAudio()
         {
-            var clipPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "sounds", "twoBells.wav");
+            var clipPath = FindAssetPath("twoBells.wav");
             using (var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV))
             {                
                 yield return webRequest.SendWebRequest();
@@ -62,7 +80,6 @@ namespace sailadex
 
         private static IEnumerator LoadFishBadges()
         {
-            var fishBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "fish");
             int[] amountNums = { 25, 50, 100 };
 
             List<Coroutine> textureCoroutines = new List<Coroutine>();
@@ -72,7 +89,7 @@ namespace sailadex
                 for (int i = 0; i < 3; i++)
                 {
                     var fishBadgeName = fishName + amountNums[i];
-                    var path = Path.Combine(fishBadgesPath, fishBadgeName + ".png");
+                    var path = FindAssetPath(fishBadgeName + ".png");
                     textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
                 }
             }
@@ -80,7 +97,7 @@ namespace sailadex
             foreach (string caughtBadge in FishCaughtUI.TotalFishBadgeNames)
             {
                 var fishBadgeName = caughtBadge;
-                var path = Path.Combine(fishBadgesPath, fishBadgeName + ".png");
+                var path = FindAssetPath(fishBadgeName + ".png");
                 textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
             }
 
@@ -95,13 +112,11 @@ namespace sailadex
 
         private static IEnumerator LoadPortBadges()
         {
-            var portBadgesPath = Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "assets", "badges", "ports");
-
             List<Coroutine> textureCoroutines = new List<Coroutine>();
 
             foreach (string pbName in Region.AllBadgeNames)
             {
-                var path = Path.Combine(portBadgesPath, pbName + ".png");
+                var path = FindAssetPath(pbName + ".png");
                 textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, pbName)));
             }
 

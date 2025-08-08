@@ -223,7 +223,7 @@ namespace sailadex
                 Instance.StartCoroutine(CreateBadgeObject(badgeGOs, badgeName, portsVisitedGO, new Vector3(15f, 15f, 1f), new Vector3(-8f, -2f, 0f)));
             }
 
-            Instance.StartCoroutine(CreateBadgeObject(badgeGOs, "allPortsBadge", portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.22f, -0.007f)));            
+            Instance.StartCoroutine(CreateBadgeObject(badgeGOs, "allPortsBadge", portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.245f, -0.007f)));            
 
             PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 
