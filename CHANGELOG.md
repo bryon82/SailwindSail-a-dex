@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.6] - 2025-08-08
+
+### Fixed
+- Not being able to find the assets when using a mod manager.
+
 ## [v1.5.5] - 2025-08-06
 
 ### Fixed
