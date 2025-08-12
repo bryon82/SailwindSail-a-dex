@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.7] - 2025-08-12
+
+### Updated
+- Assets and asset loader to decrease game startup time.
+
 ## [v1.5.6] - 2025-08-08
 
 ### Fixed

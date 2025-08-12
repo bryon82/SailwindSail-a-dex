@@ -15,6 +15,8 @@ namespace sailadex
         public static Dictionary<string, Material> Materials { get; private set; }
 
         private static Dictionary<string, Texture2D> _textures;
+        private static Dictionary<string, Texture2D> _fishTextures;
+        private static Dictionary<int, Texture2D> _badgeRings;
         private static bool _fishBadgesLoaded;
         private static bool _portBadgesLoaded;
 
@@ -40,6 +42,8 @@ namespace sailadex
         {
             Materials = new Dictionary<string, Material>();
             _textures = new Dictionary<string, Texture2D>();
+            _fishTextures = new Dictionary<string, Texture2D>();
+            _badgeRings = new Dictionary<int, Texture2D>();
 
             Instance.StartCoroutine(LoadAssetsAsync());
         }
@@ -54,14 +58,14 @@ namespace sailadex
             yield return fishBadgeCoroutine;
             yield return portBadgeCoroutine;
 
-            LogInfo("All assets loaded.");
+            LogInfo("Assets loaded");
         }
 
         private static IEnumerator LoadAudio()
         {
             var clipPath = FindAssetPath("twoBells.wav");
             using (var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV))
-            {                
+            {
                 yield return webRequest.SendWebRequest();
 
                 if (webRequest.isNetworkError || webRequest.isHttpError)
@@ -74,45 +78,247 @@ namespace sailadex
                 clip.name = "twoBells";
                 NotificationSound = clip;
 
-                LogInfo("Audio loaded.");
+                LogDebug("Audio loaded.");
             }
         }
 
         private static IEnumerator LoadFishBadges()
         {
-            int[] amountNums = { 25, 50, 100 };
+            yield return Instance.StartCoroutine(LoadBadgeRings());
+            yield return Instance.StartCoroutine(LoadFishTextures());
+            yield return Instance.StartCoroutine(GenerateFishBadges());
 
-            List<Coroutine> textureCoroutines = new List<Coroutine>();
+            _fishBadgesLoaded = true;
+            LogDebug("Fish badges loaded.");
+        }
+
+        private static IEnumerator LoadBadgeRings()
+        {
+            int[] amountNums = { 25, 50, 100 };
+            List<Coroutine> ringCoroutines = new List<Coroutine>();
+
+            foreach (int amount in amountNums)
+            {
+                var ringName = amount + "Fish";
+                var path = FindAssetPath(ringName + ".png");
+                ringCoroutines.Add(Instance.StartCoroutine(LoadBadgeRing(path, amount)));
+            }
+
+            foreach (var coroutine in ringCoroutines)
+            {
+                yield return coroutine;
+            }
+        }
+
+        private static IEnumerator LoadBadgeRing(string path, int amount)
+        {
+            if (!File.Exists(path))
+            {
+                LogError($"Badge ring file not found: {path}");
+                yield break;
+            }
+
+            var texture2D = new Texture2D(1, 1);
+            byte[] fileData = null;
+
+            yield return Instance.StartCoroutine(LoadFile(path, result => fileData = result));
+
+            if (fileData != null && fileData.Length > 0)
+            {
+                bool success = ImageConversion.LoadImage(texture2D, fileData);
+
+                if (!success)
+                {
+                    LogError($"Failed to load badge ring from bytes: {path}");
+                    yield break;
+                }
+
+                _badgeRings[amount] = texture2D;
+            }
+        }
+
+        private static IEnumerator LoadFishTextures()
+        {
+            List<Coroutine> fishCoroutines = new List<Coroutine>();
 
             foreach (string fishName in FishCaughtUI.FishNames)
             {
-                for (int i = 0; i < 3; i++)
+                var path = FindAssetPath(fishName + ".png");
+                fishCoroutines.Add(Instance.StartCoroutine(LoadFishTexture(path, fishName)));
+            }
+
+            foreach (var coroutine in fishCoroutines)
+            {
+                yield return coroutine;
+            }
+        }
+
+        private static IEnumerator LoadFishTexture(string path, string fishName)
+        {
+            if (!File.Exists(path))
+            {
+                LogError($"Fish texture file not found: {path}");
+                yield break;
+            }
+
+            var texture2D = new Texture2D(1, 1);
+            byte[] fileData = null;
+
+            yield return Instance.StartCoroutine(LoadFile(path, result => fileData = result));
+
+            if (fileData != null && fileData.Length > 0)
+            {
+                bool success = ImageConversion.LoadImage(texture2D, fileData);
+
+                if (!success)
                 {
-                    var fishBadgeName = fishName + amountNums[i];
-                    var path = FindAssetPath(fishBadgeName + ".png");
-                    textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
+                    LogError($"Failed to load fish texture from bytes: {path}");
+                    yield break;
                 }
+
+                _fishTextures[fishName] = texture2D;
+            }
+        }
+
+        private static IEnumerator GenerateFishBadges()
+        {
+            int[] amountNums = { 25, 50, 100 };
+
+            foreach (string fishName in FishCaughtUI.FishNames)
+            {
+                if (!_fishTextures.ContainsKey(fishName))
+                {
+                    LogError($"Fish texture not found for: {fishName}");
+                    continue;
+                }
+
+                var fishTexture = _fishTextures[fishName];
+
+                for (int i = 0; i < amountNums.Length; i++)
+                {
+                    int amount = amountNums[i];
+                    if (!_badgeRings.ContainsKey(amount))
+                    {
+                        LogError($"Badge ring not found for amount: {amount}");
+                        continue;
+                    }
+
+                    var ringTexture = _badgeRings[amount];
+                    var badgeName = fishName + amount;
+
+                    var combinedTexture = CombineTextures(fishTexture, ringTexture);
+                    combinedTexture.name = badgeName;
+
+                    _textures[badgeName] = combinedTexture;
+                    Materials[badgeName] = CreateMaterial(combinedTexture);
+                }
+
+                yield return null;
             }
 
             foreach (string caughtBadge in FishCaughtUI.TotalFishBadgeNames)
             {
-                var fishBadgeName = caughtBadge;
-                var path = FindAssetPath(fishBadgeName + ".png");
-                textureCoroutines.Add(Instance.StartCoroutine(LoadTexture(path, fishBadgeName)));
+                var path = FindAssetPath(caughtBadge + ".png");
+                yield return Instance.StartCoroutine(LoadTexture(path, caughtBadge));
             }
+        }
 
-            foreach (var coroutine in textureCoroutines)
+        private static Texture2D CombineTextures(Texture2D fishTexture, Texture2D ringTexture)
+        {
+            var width = ringTexture.width;
+            var height = ringTexture.height;
+
+            Texture2D combinedTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+
+            Color[] ringPixels = ringTexture.GetPixels();
+            combinedTexture.SetPixels(ringPixels);
+            
+            Texture2D scaledFishTexture = ScaleTexture(fishTexture, width, height);
+            Color[] fishPixels = scaledFishTexture.GetPixels();
+
+            // Blend the scaled fish onto the ring
+            for (int i = 0; i < ringPixels.Length; i++)
             {
-                yield return coroutine;
+                Color fishColor = fishPixels[i];
+                Color ringColor = ringPixels[i];
+
+                if (fishColor.a > 0)
+                {
+                    ringPixels[i] = Color.Lerp(ringColor, fishColor, fishColor.a);
+                }
             }
 
-            _fishBadgesLoaded = true;
-            LogInfo("Fishing badges loaded.");
+            combinedTexture.SetPixels(ringPixels);
+            combinedTexture.Apply();
+
+            UnityEngine.Object.DestroyImmediate(scaledFishTexture);
+
+            return combinedTexture;
+        }
+
+        private static Texture2D ScaleTexture(Texture2D source, int targetWidth, int targetHeight)
+        {
+            var sourceAspect = (float)source.width / source.height;
+            var targetAspect = (float)targetWidth / targetHeight;
+
+            int scaledWidth, scaledHeight;
+
+            if (sourceAspect > targetAspect)
+            {
+                scaledWidth = targetWidth;
+                scaledHeight = Mathf.RoundToInt(targetWidth / sourceAspect);
+            }
+            else
+            {
+                scaledHeight = targetHeight;
+                scaledWidth = Mathf.RoundToInt(targetHeight * sourceAspect);
+            }
+
+            Texture2D result = new Texture2D(targetWidth, targetHeight, source.format, false);
+
+            Color[] resultPixels = new Color[targetWidth * targetHeight];
+            for (int i = 0; i < resultPixels.Length; i++)
+            {
+                resultPixels[i] = Color.clear;
+            }
+
+            var offsetX = (targetWidth - scaledWidth) / 2;
+            var offsetY = (targetHeight - scaledHeight) / 2;
+
+            Color[] sourcePixels = source.GetPixels();
+
+            for (int y = 0; y < scaledHeight; y++)
+            {
+                for (int x = 0; x < scaledWidth; x++)
+                {
+                    var sourceX = (float)x / scaledWidth * source.width;
+                    var sourceY = (float)y / scaledHeight * source.height;
+
+                    var sourceXInt = Mathf.FloorToInt(sourceX);
+                    var sourceYInt = Mathf.FloorToInt(sourceY);
+
+                    sourceXInt = Mathf.Clamp(sourceXInt, 0, source.width - 1);
+                    sourceYInt = Mathf.Clamp(sourceYInt, 0, source.height - 1);
+
+                    var sourceIndex = sourceYInt * source.width + sourceXInt;
+                    var resultIndex = (y + offsetY) * targetWidth + (x + offsetX);
+
+                    if (resultIndex >= 0 && resultIndex < resultPixels.Length)
+                    {
+                        resultPixels[resultIndex] = sourcePixels[sourceIndex];
+                    }
+                }
+            }
+
+            result.SetPixels(resultPixels);
+            result.Apply();
+
+            return result;
         }
 
         private static IEnumerator LoadPortBadges()
         {
-            List<Coroutine> textureCoroutines = new List<Coroutine>();
+            var textureCoroutines = new List<Coroutine>();
 
             foreach (string pbName in Region.AllBadgeNames)
             {
@@ -126,7 +332,7 @@ namespace sailadex
             }
 
             _portBadgesLoaded = true;
-            LogInfo("Port badges loaded.");
+            LogDebug("Port badges loaded.");
         }
 
         private static IEnumerator LoadTexture(string path, string textureName)
@@ -137,9 +343,9 @@ namespace sailadex
                 yield break;
             }
 
-            var texture2D = new Texture2D(1, 1);            
+            var texture2D = new Texture2D(1, 1);
             byte[] fileData = null;
-            
+
             yield return Instance.StartCoroutine(LoadFile(path, result => fileData = result));
 
             if (fileData != null && fileData.Length > 0)
@@ -151,13 +357,13 @@ namespace sailadex
                     LogError($"Failed to load texture from bytes: {path}");
                     yield break;
                 }
-                
+
                 _textures[textureName] = texture2D;
                 Materials[textureName] = CreateMaterial(texture2D);
             }
         }
 
-        private static IEnumerator LoadFile(string path, Action<byte[]> onComplete )
+        private static IEnumerator LoadFile(string path, Action<byte[]> onComplete)
         {
             byte[] result = null;
 
@@ -171,9 +377,9 @@ namespace sailadex
                 {
                     LogError(www.error);
                     yield break;
-                }                
-                
-                result = www.downloadHandler.data;                
+                }
+
+                result = www.downloadHandler.data;
             }
 
             onComplete(result);

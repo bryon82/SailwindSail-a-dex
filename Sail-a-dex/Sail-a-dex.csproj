@@ -102,7 +102,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)Sail-a-dex.VS.props" />
   <ItemGroup>
-    <_CopyItemsAssets Include="$(SolutionDir)\assets\**\*.*" />
+    <_CopyItemsAssets Include="$(SolutionDir)\Assets\*.*" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <RemoveDir Directories="$(BepInExPluginsDirectory)\$(ModName)" />

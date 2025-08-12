@@ -137,7 +137,7 @@ namespace sailadex
 
             FishCaughtUI.Instance.SetUIElems(fishnameTexts, caughtCountTexts, badgeGOs);
 
-            LogInfo("Loaded fish caught UI");
+            LogDebug("Loaded fish caught UI");
 
             return fishCaughtUI;
         }
@@ -227,7 +227,7 @@ namespace sailadex
 
             PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 
-            LogInfo("Loaded ports visited UI");
+            LogDebug("Loaded ports visited UI");
 
             return portsVisitedUI;
         }
@@ -323,7 +323,7 @@ namespace sailadex
             Object.Destroy(transitTextGO.transform.GetChild(1).gameObject);
             Object.Destroy(transitTextGO.transform.GetChild(0).gameObject);
 
-            LogInfo("Loaded stats & transit UI");
+            LogDebug("Loaded stats & transit UI");
 
             return statsUI;
         }
