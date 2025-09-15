@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.8] - 2025-09-15
+
+### Added
+- New ports from 0.33 update to Ports Visited log.
+
+### Updated
+- Ports Visited log layout to accommodate new ports.
+
 ## [v1.5.7] - 2025-08-12
 
 ### Updated

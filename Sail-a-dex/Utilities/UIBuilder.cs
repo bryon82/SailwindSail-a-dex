@@ -157,13 +157,13 @@ namespace sailadex
             portsVisitedUI.name = "ports visited ui";
             portsVisitedUI.AddComponent<PortsVisitedUI>();
 
-            portsVisitedUI.transform.GetChild(0).localPosition = new Vector3(0.75f, 0.22f, portsVisitedUI.transform.GetChild(0).localPosition[2]);
-            portsVisitedUI.transform.GetChild(1).localPosition = new Vector3(0.75f, 0.01f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
-            portsVisitedUI.transform.GetChild(2).localPosition = new Vector3(0.02f, 0.22f, portsVisitedUI.transform.GetChild(2).localPosition[2]);
+            portsVisitedUI.transform.GetChild(0).localPosition = new Vector3(0.75f, 0.245f, portsVisitedUI.transform.GetChild(0).localPosition[2]);
+            portsVisitedUI.transform.GetChild(1).localPosition = new Vector3(0.75f, -0.05f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
+            portsVisitedUI.transform.GetChild(2).localPosition = new Vector3(0.02f, 0.245f, portsVisitedUI.transform.GetChild(2).localPosition[2]);
 
             var lagoon = GameObject.Instantiate(portsVisitedUI.transform.GetChild(1).gameObject);
             lagoon.transform.parent = portsVisitedUI.transform;
-            lagoon.transform.localPosition = new Vector3(0.02f, -0.065f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
+            lagoon.transform.localPosition = new Vector3(0.02f, -0.05f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
             lagoon.transform.localRotation = portsVisitedUI.transform.GetChild(1).localRotation;
             lagoon.transform.localScale = portsVisitedUI.transform.GetChild(1).localScale;
             lagoon.name = "lagoon";
@@ -223,7 +223,7 @@ namespace sailadex
                 Instance.StartCoroutine(CreateBadgeObject(badgeGOs, badgeName, portsVisitedGO, new Vector3(15f, 15f, 1f), new Vector3(-8f, -2f, 0f)));
             }
 
-            Instance.StartCoroutine(CreateBadgeObject(badgeGOs, "allPortsBadge", portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(0.55f, -0.245f, -0.007f)));            
+            Instance.StartCoroutine(CreateBadgeObject(badgeGOs, "allPortsBadge", portsVisitedUI.transform, new Vector3(0.1f, 0.0675f, 1f), new Vector3(-0.15f, -0.23f, -0.007f)));            
 
             PortsVisitedUI.Instance.SetUIElems(portNameTMs, portVisitedTMs, badgeGOs);
 

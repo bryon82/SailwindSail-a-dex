@@ -49,6 +49,9 @@ namespace sailadex
                     "Alchemist's Island",
                     "Al'Ankh Academy",
                     "Oasis",
+                    "Old Ankh Town",
+                    "Mirage Mountain",
+                    "Saffron Island",
                 },
                 new List<string>
                 {
@@ -61,6 +64,9 @@ namespace sailadex
                     "island 7 A (alchemist's island)",
                     "island 8 A (academy)",
                     "island 20 A (Oasis)",
+                    "island 40 (coffee)",
+                    "island 41 (mirage mountain)",
+                    "island 42 ()",
                 }
             );
 
