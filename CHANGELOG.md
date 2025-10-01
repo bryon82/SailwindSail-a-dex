@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.9] - 2025-10-01
+
+### Fixed
+- Bug in transit times where transits were not being tracked.
+
 ## [v1.5.8] - 2025-09-15
 
 ### Added

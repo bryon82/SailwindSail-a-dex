@@ -177,7 +177,7 @@ namespace sailadex
 
             foreach (Region region in Region.AllRegions)
             {
-                if (region.Ports.Contains(islandName))
+                if (region.Islands.Contains(islandName))
                 {
                     TrackRegionUnderway(region.Code);
                     return;
@@ -234,7 +234,7 @@ namespace sailadex
         {
             foreach (Region region in Region.AllRegions)
             {
-                if (region.Ports.Contains(islandName))
+                if (region.Islands.Contains(islandName))
                 {
                     foreach (Region departureRegion in Region.AllRegions)
                     {
