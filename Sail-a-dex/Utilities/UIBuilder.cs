@@ -72,11 +72,17 @@ namespace sailadex
             fishCaughtUI.transform.localRotation = repUI.transform.localRotation;
             fishCaughtUI.transform.localScale = repUI.transform.localScale;
             fishCaughtUI.name = "fish caught ui";
+            Object.Destroy(fishCaughtUI.transform.GetChild(7).gameObject);
+            Object.Destroy(fishCaughtUI.transform.GetChild(6).gameObject);
+            Object.Destroy(fishCaughtUI.transform.GetChild(5).gameObject);
+            Object.Destroy(fishCaughtUI.transform.GetChild(4).gameObject);
+            Object.Destroy(fishCaughtUI.transform.GetChild(3).gameObject);
             Object.Destroy(fishCaughtUI.transform.GetChild(2).gameObject);
-            Object.Destroy(fishCaughtUI.transform.GetChild(1).gameObject);
+            Object.Destroy(fishCaughtUI.transform.GetChild(0).gameObject);
             fishCaughtUI.AddComponent<FishCaughtUI>();
 
-            var fishCaughtTextGO = fishCaughtUI.transform.GetChild(0).gameObject;
+            var fishCaughtTextGO = fishCaughtUI.transform.GetChild(1).gameObject;
+            fishCaughtTextGO.SetActive(true);
             fishCaughtTextGO.GetComponent<TextMesh>().font = fishCaughtTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
             fishCaughtTextGO.GetComponent<MeshRenderer>().material = fishCaughtTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             fishCaughtTextGO.transform.GetChild(1).gameObject.name = "caught count";
@@ -155,11 +161,18 @@ namespace sailadex
             portsVisitedUI.transform.localRotation = repUI.transform.localRotation;
             portsVisitedUI.transform.localScale = repUI.transform.localScale;
             portsVisitedUI.name = "ports visited ui";
+            Object.Destroy(portsVisitedUI.transform.GetChild(7).gameObject);
+            Object.Destroy(portsVisitedUI.transform.GetChild(6).gameObject);
+            Object.Destroy(portsVisitedUI.transform.GetChild(5).gameObject);
+            Object.Destroy(portsVisitedUI.transform.GetChild(4).gameObject);
+            Object.Destroy(portsVisitedUI.transform.GetChild(3).gameObject);
             portsVisitedUI.AddComponent<PortsVisitedUI>();
 
             portsVisitedUI.transform.GetChild(0).localPosition = new Vector3(0.75f, 0.245f, portsVisitedUI.transform.GetChild(0).localPosition[2]);
             portsVisitedUI.transform.GetChild(1).localPosition = new Vector3(0.75f, -0.05f, portsVisitedUI.transform.GetChild(1).localPosition[2]);
             portsVisitedUI.transform.GetChild(2).localPosition = new Vector3(0.02f, 0.245f, portsVisitedUI.transform.GetChild(2).localPosition[2]);
+            portsVisitedUI.transform.GetChild(1).gameObject.SetActive(true);
+            portsVisitedUI.transform.GetChild(2).gameObject.SetActive(true);
 
             var lagoon = GameObject.Instantiate(portsVisitedUI.transform.GetChild(1).gameObject);
             lagoon.transform.parent = portsVisitedUI.transform;
@@ -184,16 +197,33 @@ namespace sailadex
             for (int r = 0; r < numPorts.Length; r++)
             {
                 var portsVisitedGO = portsVisitedUI.transform.GetChild(r);
+                if (r == 3)
+                    portsVisitedGO = portsVisitedUI.transform.GetChild(8);
                 Object.Destroy(portsVisitedGO.GetChild(1).gameObject);
                 Object.Destroy(portsVisitedGO.GetChild(2).gameObject);
                 Object.Destroy(portsVisitedGO.GetChild(4).gameObject);
+                if (r == 0)
+                {
+                    Object.Destroy(portsVisitedGO.GetChild(5).gameObject);
+                    portsVisitedGO.GetChild(6).GetComponent<TextMesh>().alignment = TextAlignment.Left;
+                    portsVisitedGO.GetChild(6).GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
+                    portsVisitedGO.GetChild(6).GetComponent<TextMesh>().fontSize = 60;
+                    portsVisitedGO.GetChild(6).transform.localPosition = Vector3.zero;
+                }
 
                 var portNameTMTemplate = portsVisitedGO.GetChild(0).gameObject;
                 var portVisitedTMTemplate = portsVisitedGO.GetChild(3).gameObject;
+                portVisitedTMTemplate.SetActive(true);
                 portNameTMTemplate.name = "port1";
                 portNameTMTemplate.transform.localPosition = new Vector3(5f, -8f, -0.1f);
+                portNameTMTemplate.GetComponent<TextMesh>().alignment = TextAlignment.Left;
+                portNameTMTemplate.GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
+                portNameTMTemplate.GetComponent<TextMesh>().fontSize = 50;
                 portVisitedTMTemplate.name = "visited port1";
                 portVisitedTMTemplate.transform.localPosition = new Vector3(70f, -9f, 0f);
+                portVisitedTMTemplate.GetComponent<TextMesh>().alignment = TextAlignment.Right;
+                portVisitedTMTemplate.GetComponent<TextMesh>().anchor = TextAnchor.MiddleRight;
+                portVisitedTMTemplate.GetComponent<TextMesh>().fontSize = 50;
                 portNameTMs[portVisitedIndex] = portNameTMTemplate.GetComponent<TextMesh>();
                 portVisitedTMs[portVisitedIndex] = portVisitedTMTemplate.GetComponent<TextMesh>();
                 portVisitedIndex++;
@@ -213,7 +243,6 @@ namespace sailadex
                     portVisitedTM.transform.localRotation = portVisitedTMTemplate.transform.localRotation;
                     portVisitedTM.transform.localScale = portVisitedTMTemplate.transform.localScale;
                     portVisitedTM.name = $"visited port{(i + 1)}";
-
                     portNameTMs[portVisitedIndex] = portNameTM.GetComponent<TextMesh>();
                     portVisitedTMs[portVisitedIndex] = portVisitedTM.GetComponent<TextMesh>();
                     portVisitedIndex++;
@@ -245,11 +274,17 @@ namespace sailadex
             statsUI.transform.localRotation = repUI.transform.localRotation;
             statsUI.transform.localScale = repUI.transform.localScale;
             statsUI.name = "stats ui";
+            Object.Destroy(statsUI.transform.GetChild(7).gameObject);
+            Object.Destroy(statsUI.transform.GetChild(6).gameObject);
+            Object.Destroy(statsUI.transform.GetChild(5).gameObject);
+            Object.Destroy(statsUI.transform.GetChild(4).gameObject);
+            Object.Destroy(statsUI.transform.GetChild(3).gameObject);
             Object.Destroy(statsUI.transform.GetChild(2).gameObject);
-            Object.Destroy(statsUI.transform.GetChild(1).gameObject);
+            Object.Destroy(statsUI.transform.GetChild(0).gameObject);
             statsUI.AddComponent<StatsUI>();
 
-            var statsTextGO = statsUI.transform.GetChild(0).gameObject;
+            var statsTextGO = statsUI.transform.GetChild(1).gameObject;
+            statsTextGO.SetActive(true);
             statsTextGO.GetComponent<TextMesh>().font = statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
             statsTextGO.GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
             statsTextGO.GetComponent<MeshRenderer>().material = statsTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;

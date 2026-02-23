@@ -209,6 +209,8 @@ namespace sailadex
             [HarmonyPatch("GetNormalizedDistance")]
             public static void GetNormalizedDistancePatch(float __result)
             {
+                if (!GameState.playing)
+                    return;
                 if (statsUIEnabled.Value &&
                     GameState.currentBoat != null && 
                     !GameState.currentBoat.parent.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored() &&
