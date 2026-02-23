@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.10] - 2026-02-22
+
+### Fixed
+- UI bugs caused by changes made to reputation UI in 0.35 update
+- NRE from storm distance calculation no longer available at game start
+
 ## [v1.5.9] - 2025-10-01
 
 ### Fixed
