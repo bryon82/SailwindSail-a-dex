@@ -2,11 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.11] - 2026-04-24
+
+### Fixed
+- Bug involoved with tracking underway time when docking to or leaving from Happy Bay.
+
 ## [v1.5.10] - 2026-02-22
 
 ### Fixed
-- UI bugs caused by changes made to reputation UI in 0.35 update
-- NRE from storm distance calculation no longer available at game start
+- UI bugs caused by changes made to reputation UI in 0.35 update.
+- NRE from storm distance calculation no longer available at game start.
 
 ## [v1.5.9] - 2025-10-01
 

@@ -127,14 +127,14 @@ namespace sailadex
                 {
                     "island 15 M (Fort)",
                     "island 16 M (Sunspire)",
-                    "island 17 M (Mount Malefic)",
-                    "island 18 M (HappyBay)",
+                    "island 17 M (Mount Malefic)",                    
                     "island 19 M (Eastwind)",
                     "island 21 M (Siren Song)",
                     "island 33 M cave church",
                     "island 34 M monastery",
                     "island 35 M valley",
                     "island 23 M oracle",
+                    "island 18 M (Oasis)",
                     "island 25 (chronos)",
                 }
             );
@@ -161,7 +161,7 @@ namespace sailadex
                     "island 29 Lagoon Onna",
                     "island 31 Lagoon Fisherman",
                 }
-            );   
+            );
 
         public static readonly IReadOnlyList<Region> AllRegions = new List<Region>
         {
