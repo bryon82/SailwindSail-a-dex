@@ -127,7 +127,7 @@ namespace sailadex
                 {
                     "island 15 M (Fort)",
                     "island 16 M (Sunspire)",
-                    "island 17 M (Mount Malefic)",                    
+                    "island 17 M (Mount Malefic)",
                     "island 19 M (Eastwind)",
                     "island 21 M (Siren Song)",
                     "island 33 M cave church",
