@@ -2,10 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.5.12] - 2026-04-24
+
+### Fixed
+- Bug where fishing bonanzas and intense storms from Random Encounters were not being incremented in stats ui.
+- Font issues in stats ui.
+
 ## [v1.5.11] - 2026-04-24
 
 ### Fixed
-- Bug involoved with tracking underway time when docking to or leaving from Happy Bay.
+- Bug involved with tracking underway time when docking to or leaving from Happy Bay.
 
 ## [v1.5.10] - 2026-02-22
 

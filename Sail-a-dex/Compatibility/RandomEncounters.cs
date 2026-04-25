@@ -107,14 +107,14 @@ namespace sailadex
             public static void FishingBonanzaCountPatch()
             {
                 if (IsFishingBonanzaEnabled)
-                    StatsUI.Instance.IncrementIntStat("FishingBonanzaEnc");
+                    StatsUI.Instance.IncrementIntStat("FishingBonanzaEncounters");
             }
 
             [HarmonyPostfix]
             public static void IntenseStormCountPatch()
             {
                 if (IsIntenseStormEnabled)
-                    StatsUI.Instance.IncrementIntStat("IntenseStormEnc");
+                    StatsUI.Instance.IncrementIntStat("IntenseStormEncounters");
             }
         }
     }

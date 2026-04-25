@@ -287,12 +287,16 @@ namespace sailadex
             statsTextGO.SetActive(true);
             statsTextGO.GetComponent<TextMesh>().font = statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
             statsTextGO.GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
+            statsTextGO.GetComponent<TextMesh>().characterSize = 1f;
             statsTextGO.GetComponent<MeshRenderer>().material = statsTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             statsTextGO.transform.GetChild(0).gameObject.name = "current value";
             statsTextGO.transform.GetChild(0).localPosition = new Vector3(38f, 0f, 0f);
             statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().font = statsTextGO.transform.GetChild(1).GetComponent<TextMesh>().font;
             statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().fontSize = STAT_FONT_SIZE;
             statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().anchor = TextAnchor.MiddleLeft;
+            statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().fontStyle = FontStyle.Normal;
+            statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().characterSize = 1f;
+            statsTextGO.transform.GetChild(0).GetComponent<TextMesh>().lineSpacing = 1f;
             statsTextGO.transform.GetChild(0).GetComponent<MeshRenderer>().material = statsTextGO.transform.GetChild(1).GetComponent<MeshRenderer>().material;
             statsTextGO.transform.GetChild(1).gameObject.name = "record value";
             statsTextGO.transform.GetChild(1).localPosition = new Vector3(80f, 0f, 0f);
