@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.6.0] - 2026-06-03
+
+### Updated
+- Chenged the release process so hopefully some linux users will no longer have issues when unzipping the release file.
+
+### Performance Improvements
+- Added an isUnderway flag in code to reduce the number of calculations being done for stat tracking when they are not needed.
+- Some data structures were being rebuilt when called, these are now cached.
+
 ## [v1.5.12] - 2026-04-24
 
 ### Fixed

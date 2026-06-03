@@ -212,14 +212,14 @@ namespace sailadex
                 if (!GameState.playing)
                     return;
                 if (statsUIEnabled.Value &&
-                    GameState.currentBoat != null && 
-                    !GameState.currentBoat.parent.gameObject.GetComponent<BoatMooringRopes>().AnyRopeMoored() &&
-                    __result <= WeatherStorms.instance.GetPrivateField<float>("rainBorder"))
+                    GameState.currentBoat != null &&
+                    StatsUI.Instance.IsUnderway &&
+                    __result <= 0.33f) //WeatherStorms.instance.GetPrivateField<float>("rainBorder"))
                 {
                     StatsUI.Instance.IncrementStormsWeathered();
                 }
 
-                if (__result > WeatherStorms.instance.GetPrivateField<float>("cloudyBorder"))
+                if (__result > 0.66f) //WeatherStorms.instance.GetPrivateField<float>("cloudyBorder"))
                     StatsUI.Instance.ClearLastStorm();
             }
         }

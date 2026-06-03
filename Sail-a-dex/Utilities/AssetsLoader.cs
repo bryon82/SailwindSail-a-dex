@@ -193,6 +193,7 @@ namespace sailadex
                 }
 
                 var fishTexture = _fishTextures[fishName];
+                var scaledFishTextures = new Dictionary<string, Texture2D>();
 
                 for (int i = 0; i < amountNums.Length; i++)
                 {
@@ -206,11 +207,23 @@ namespace sailadex
                     var ringTexture = _badgeRings[amount];
                     var badgeName = fishName + amount;
 
-                    var combinedTexture = CombineTextures(fishTexture, ringTexture);
+                    var sizeKey = $"{ringTexture.width}x{ringTexture.height}";
+                    if (!scaledFishTextures.TryGetValue(sizeKey, out var scaledFishTexture))
+                    {
+                        scaledFishTexture = ScaleTexture(fishTexture, ringTexture.width, ringTexture.height);
+                        scaledFishTextures.Add(sizeKey, scaledFishTexture);
+                    }
+
+                    var combinedTexture = CombineTextures(scaledFishTexture, ringTexture);
                     combinedTexture.name = badgeName;
 
                     _textures[badgeName] = combinedTexture;
                     Materials[badgeName] = CreateMaterial(combinedTexture);
+                }
+
+                foreach (var scaledTexture in scaledFishTextures.Values)
+                {
+                    UnityEngine.Object.DestroyImmediate(scaledTexture);
                 }
 
                 yield return null;
@@ -223,7 +236,7 @@ namespace sailadex
             }
         }
 
-        private static Texture2D CombineTextures(Texture2D fishTexture, Texture2D ringTexture)
+        private static Texture2D CombineTextures(Texture2D scaledFishTexture, Texture2D ringTexture)
         {
             var width = ringTexture.width;
             var height = ringTexture.height;
@@ -233,7 +246,6 @@ namespace sailadex
             Color[] ringPixels = ringTexture.GetPixels();
             combinedTexture.SetPixels(ringPixels);
             
-            Texture2D scaledFishTexture = ScaleTexture(fishTexture, width, height);
             Color[] fishPixels = scaledFishTexture.GetPixels();
 
             // Blend the scaled fish onto the ring
@@ -250,8 +262,6 @@ namespace sailadex
 
             combinedTexture.SetPixels(ringPixels);
             combinedTexture.Apply();
-
-            UnityEngine.Object.DestroyImmediate(scaledFishTexture);
 
             return combinedTexture;
         }

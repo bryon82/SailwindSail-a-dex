@@ -12,6 +12,7 @@ namespace sailadex
     public class StatsUI : MonoBehaviour
     {
         public static StatsUI Instance { get; private set; }
+        public bool IsUnderway { get; internal set;  }
 
         private Dictionary<string, TextMesh> _statTMs;
         private Dictionary<string, float> _floatStats;
@@ -19,9 +20,9 @@ namespace sailadex
         private Dictionary<string, bool[]> _boolArrayStats;
 
         private Vector3 lastPosition;
-        private string lastPortVisited;
+        internal string lastPortVisited;
         private int trackerTimer;
-        private string lastStorm;
+        internal string lastStorm;
 
         private const int TRACKER_TIMER_VALUE = 1000;
         private const float MILES_CONVERSION_FACTOR = 61f;
@@ -65,7 +66,7 @@ namespace sailadex
 
         public IReadOnlyDictionary<string, float> FloatStats => _floatStats;
         public IReadOnlyDictionary<string, int> IntStats => _intStats;
-        public IReadOnlyDictionary<string, bool[]> BoolArrayStats => _boolArrayStats;        
+        public IReadOnlyDictionary<string, bool[]> BoolArrayStats => _boolArrayStats;
 
         private void Awake()
         {
@@ -85,6 +86,7 @@ namespace sailadex
             lastPortVisited = string.Empty;
             trackerTimer = TRACKER_TIMER_VALUE;
             lastStorm = string.Empty;
+            IsUnderway = false;
 
             foreach (string stat in FloatStatNames)
             {
@@ -169,6 +171,7 @@ namespace sailadex
             if (string.IsNullOrEmpty(islandName))
                 return;
 
+            IsUnderway = true;
             UpdateMassRecords();
             ResetUnderwayTimers();
 
@@ -221,6 +224,7 @@ namespace sailadex
             if (islandName.IsNullOrWhiteSpace())
                 return;
 
+            IsUnderway = false;
             UpdateStats();
             UpdateUnderwayRecords();
 
@@ -310,6 +314,9 @@ namespace sailadex
 
         public void TrackDistance()
         {
+            if (GameState.currentBoat == null || !IsUnderway)
+                return;
+
             var globePosition = FloatingOriginManager.instance.GetGlobeCoords(GameState.currentBoat);
             var currentPosition = new Vector3(globePosition.x, 0f, globePosition.z);
             if (lastPosition == Vector3.zero)

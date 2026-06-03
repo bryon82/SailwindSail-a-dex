@@ -17,6 +17,8 @@ namespace sailadex
         public string Code => _code;
         public IReadOnlyList<string> Ports => _ports.AsReadOnly();
         public IReadOnlyList<string> Islands => _islands.AsReadOnly();
+        public static IReadOnlyList<string> AllPorts { get; private set; }
+        public static IReadOnlyList<string> TransitCodes { get; private set; }
 
         private Region(int index, string name, string badgeName, string code, List<string> ports, List<string> islands)
         {
@@ -180,36 +182,27 @@ namespace sailadex
             "allPortsBadge"
         }.AsReadOnly();
 
-        public static IReadOnlyList<string> AllPorts
+        static Region()
         {
-            get
+            var allPorts = new List<string>();
+            foreach (var region in AllRegions)
             {
-                var allPorts = new List<string>();
-                foreach (var region in AllRegions)
-                {
-                    allPorts.AddRange(region.Ports);
-                }
-                return allPorts.AsReadOnly();
+                allPorts.AddRange(region.Ports);
             }
-        }
+            AllPorts = allPorts.AsReadOnly();
 
-        public static IReadOnlyList<string> TransitCodes
-        {
-            get
+            var transitCodes = new List<string>();
+            foreach (var region in AllRegions)
             {
-                var transitCodes = new List<string>();
-                foreach (var region in AllRegions)
+                foreach (var otherRegion in AllRegions)
                 {
-                    foreach (var otherRegion in AllRegions)
+                    if (region.Index != otherRegion.Index)
                     {
-                        if (region.Index != otherRegion.Index)
-                        {
-                            transitCodes.Add($"{region.Code}{otherRegion.Code}");
-                        }
+                        transitCodes.Add($"{region.Code}{otherRegion.Code}");
                     }
                 }
-                return transitCodes.AsReadOnly();
             }
-        }
+            TransitCodes = transitCodes.AsReadOnly();
+        }        
     }
 }

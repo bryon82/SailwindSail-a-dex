@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using static sailadex.Configs;
 
@@ -7,7 +8,7 @@ namespace sailadex
     public class NotificationUiQueue : MonoBehaviour
     {
         public static NotificationUiQueue Instance { get; private set; }
-        private float _timer;
+        private Coroutine _queueCoroutine;
         private Queue<string> _queue;
         private AudioSource _audioSource;
 
@@ -22,7 +23,7 @@ namespace sailadex
             }
             Instance = this;
             _queue = new Queue<string>();
-            _timer = 0f;
+            _queueCoroutine = null;
 
             _audioSource = gameObject.AddComponent<AudioSource>();
             _audioSource.volume = notificationSoundVolume.Value;
@@ -31,28 +32,35 @@ namespace sailadex
             _audioSource.maxDistance = 20f;
         }
 
-        private void Update()
+        private IEnumerator ProcessQueue()
         {
-            if (_timer > 0f)
+            while (_queue.Count > 0)
             {
-                _timer -= Time.deltaTime;
+                NotificationUi.instance.ShowNotification(_queue.Dequeue());
+                if (notificationSoundVolume.Value > 0f)
+                    _audioSource.PlayOneShot(AssetsLoader.NotificationSound);
+
+                yield return new WaitForSeconds(TIMER_DURATION);
             }
-            else
-            {
-                _timer = 0f;
-                if (_queue.Count > 0) 
-                {
-                    NotificationUi.instance.ShowNotification(_queue.Dequeue());
-                    if (notificationSoundVolume.Value > 0f)
-                        _audioSource.PlayOneShot(AssetsLoader.NotificationSound);
-                    _timer = TIMER_DURATION;
-                }
-            }
+
+            _queueCoroutine = null;
         }
 
         public void QueueNotification(string message) 
         {
             _queue.Enqueue(message);
+            if (_queueCoroutine == null)
+                _queueCoroutine = StartCoroutine(ProcessQueue());
         }
+
+        //Testing
+        //public void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.P))
+        //    {
+        //        QueueNotification("Test Notification");
+        //        QueueNotification("Test Notification 2");
+        //    }
+        //}
     }
 }

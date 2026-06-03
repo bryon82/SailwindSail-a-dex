@@ -44,7 +44,11 @@ namespace sailadex
 
                     boolArrayStats = StatsUI.Instance.BoolArrayStats.ToDictionary(
                     entry => entry.Key,
-                    entry => entry.Value)
+                    entry => entry.Value),
+
+                    isUnderway = StatsUI.Instance.IsUnderway,
+                    lastStorm = StatsUI.Instance.lastStorm,
+                    lastPortVisited = StatsUI.Instance.lastPortVisited
                 };
 
                 ModSave.Save(Instance.Info, saveContainer);
@@ -81,7 +85,16 @@ namespace sailadex
                 if (saveContainer.boolArrayStats != null)
                 {
                     StatsUI.Instance.LoadBoolArrayStats(saveContainer.boolArrayStats);
-                }                
+                }
+                if (saveContainer.lastStorm != null)
+                {
+                    StatsUI.Instance.lastStorm = saveContainer.lastStorm;
+                }
+                if (saveContainer.lastPortVisited != null)
+                {
+                    StatsUI.Instance.lastPortVisited = saveContainer.lastPortVisited;
+                }
+                StatsUI.Instance.IsUnderway = saveContainer.isUnderway;
             }           
         }
 
@@ -109,5 +122,8 @@ namespace sailadex
         public Dictionary<string, float> floatStats;
         public Dictionary<string, int> intStats;
         public Dictionary<string, bool[]> boolArrayStats;
+        public bool isUnderway;
+        public string lastStorm;
+        public string lastPortVisited;
     }
 }
