@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.7.0] - 2026-06-21
+
+### Updated
+- Guid, removed the 82.
+- The guid for ModSaveBackups.
+
+## Added
+- Save load helper to rename ModSaveBackup saves for updated guid.
+
 ## [v1.6.0] - 2026-06-03
 
 ### Updated

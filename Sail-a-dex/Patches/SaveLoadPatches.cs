@@ -2,7 +2,9 @@
 using ModSaveBackups;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEngine;
 using static sailadex.SAD_Plugin;
 
 namespace sailadex
@@ -58,6 +60,13 @@ namespace sailadex
             [HarmonyPatch("LoadModData")]
             public static void LoadModDataPatch()
             {
+                var oldSavesFile = $"{Application.persistentDataPath}/slot{SaveSlots.currentSlot}/com.raddude82.sailadex.save";
+                if (File.Exists(oldSavesFile))
+                {
+                    LogInfo($"Found old save file");
+                    RenameOldSaves();
+                }
+
                 if (!ModSave.Load(Instance.Info, out SailadexSaveContainer saveContainer))
                 { 
                     LogWarning("Save file loading failed. If this is the first time loading this save with this mod, this is normal.");
@@ -66,16 +75,16 @@ namespace sailadex
 
                 if (saveContainer.caughtFish != null)
                     FishCaughtUI.Instance.LoadCaughtFish(saveContainer.caughtFish);
-                
+
                 if (saveContainer.fishBadges != null)
                     FishCaughtUI.Instance.LoadFishBadges(saveContainer.fishBadges);
 
                 if (saveContainer.visitedPorts != null)
                     PortsVisitedUI.Instance.LoadVisitedPorts(saveContainer.visitedPorts);
-                
+
                 if (saveContainer.portBadges != null)
                     PortsVisitedUI.Instance.LoadPortBadges(saveContainer.portBadges);
-                
+
                 if (saveContainer.floatStats != null)
                     StatsUI.Instance.LoadFloatStats(saveContainer.floatStats);
 
@@ -95,7 +104,7 @@ namespace sailadex
                     StatsUI.Instance.lastPortVisited = saveContainer.lastPortVisited;
                 }
                 StatsUI.Instance.IsUnderway = saveContainer.isUnderway;
-            }           
+            }
         }
 
         public static void LoadDictionary<T>(Dictionary<string, T> saveDict, Dictionary<string, T> gameDict)
@@ -106,8 +115,22 @@ namespace sailadex
                 {
                     LogWarning($"LoadData: {item.Key} not found in game");
                     continue;
-                }                
+                }
                 gameDict[item.Key] = item.Value;
+            }
+        }
+
+        public static void RenameOldSaves()
+        {
+            string oldSavesDir = $"{Application.persistentDataPath}/slot{SaveSlots.currentSlot}";
+            if (Directory.Exists(oldSavesDir))
+            {
+                foreach (var file in Directory.GetFiles(oldSavesDir))
+                {
+                    var newFileName = file.Replace("raddude82.sailadex", "raddude.sailadex");
+                    LogInfo($"Renaming old sailadex save file {file} to {newFileName}");
+                    File.Move(file, newFileName);
+                }
             }
         }
     }
