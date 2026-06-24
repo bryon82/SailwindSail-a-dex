@@ -186,8 +186,8 @@ namespace sailadex
         private class BoatMassPatches
         {
             [HarmonyPostfix]
-            [HarmonyPatch("FixedUpdate")]
-            public static void FixedUpdatePatch()
+            [HarmonyPatch("Update")]
+            public static void UpdatePatch()
             {
                 if (statsUIEnabled.Value && GameState.currentBoat != null)
                     StatsUI.Instance.TrackDistance();

@@ -14,7 +14,7 @@ namespace sailadex
     {
         public const string PLUGIN_GUID = "com.raddude.sailadex";
         public const string PLUGIN_NAME = "Sail-a-dex";
-        public const string PLUGIN_VERSION = "1.7.0";
+        public const string PLUGIN_VERSION = "1.7.1";
 
         public const string MODSAVEBACKUPS_GUID = "com.raddude.modsavebackups";
         public const string MODSAVEBACKUPS_VERSION = "1.2.0";

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.7.1] - 2026-06-23
+
+### Fixed
+- Bug from update in 0.38 which changed patch targeted function from FixedUpdate to Update.
+
+### Updated
+- Miles tracked calculation in StatsUI
+- Directory searched when attempting to rename modsave files so that it is not hardcoded, for PortableSaves compatibility.
+
 ## [v1.7.0] - 2026-06-21
 
 ### Updated

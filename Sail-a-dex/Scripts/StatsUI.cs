@@ -25,7 +25,7 @@ namespace sailadex
         internal string lastStorm;
 
         private const int TRACKER_TIMER_VALUE = 1000;
-        private const float MILES_CONVERSION_FACTOR = 61f;
+        private const float MILES_CONVERSION_FACTOR = 137.487f;
 
         public static readonly string[] FloatStatNames =
         {

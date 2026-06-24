@@ -60,7 +60,7 @@ namespace sailadex
             [HarmonyPatch("LoadModData")]
             public static void LoadModDataPatch()
             {
-                var oldSavesFile = $"{Application.persistentDataPath}/slot{SaveSlots.currentSlot}/com.raddude82.sailadex.save";
+                var oldSavesFile = $"{ModSave.GetSaveDirectory(SaveSlots.currentSlot)}/com.raddude82.sailadex.save";
                 if (File.Exists(oldSavesFile))
                 {
                     LogInfo($"Found old save file");
@@ -122,7 +122,7 @@ namespace sailadex
 
         public static void RenameOldSaves()
         {
-            string oldSavesDir = $"{Application.persistentDataPath}/slot{SaveSlots.currentSlot}";
+            var oldSavesDir = ModSave.GetSaveDirectory(SaveSlots.currentSlot);
             if (Directory.Exists(oldSavesDir))
             {
                 foreach (var file in Directory.GetFiles(oldSavesDir))

@@ -1,6 +1,4 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System.Reflection;
 using static sailadex.SAD_Plugin;
 
@@ -12,11 +10,7 @@ namespace sailadex
         { 
             get 
             {
-                var seaLifeInstalled = RE_PluginInstance.GetPrivateField<BaseUnityPlugin>("seaLifeModInstance");
-                var seaLifeControlled = RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("controlSeaLifeMod");
-                if (seaLifeControlled != null)
-                    return seaLifeInstalled != null && seaLifeControlled.Value;
-                return RE_PluginInstance.GetPrivateProperty<bool>("IsSeaLifeModEnabled");
+                return RE_PluginInstance.GetStaticProperty<bool>("IsSeaLifeModEnabled");
             }
         }
 
@@ -24,9 +18,7 @@ namespace sailadex
         { 
             get
             {
-                if (RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableFlotsam") != null)
-                    return RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableFlotsam").Value;
-                return RE_PluginInstance.GetPrivateProperty<bool>("IsFlotsamEnabled");
+                return RE_PluginInstance.GetStaticProperty<bool>("IsFlotsamEnabled");
             }
         }
 
@@ -34,27 +26,21 @@ namespace sailadex
         {
             get 
             {
-                if (RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableDenseFog") != null)
-                    return RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableDenseFog").Value;
-                return RE_PluginInstance.GetPrivateProperty<bool>("IsDenseFogEnabled");
+                return RE_PluginInstance.GetStaticProperty<bool>("IsDenseFogEnabled");
             }
         }
         internal static bool IsFishingBonanzaEnabled
         {
             get
             {
-                if (RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableFishingBonanza") != null)
-                    return RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableFishingBonanza").Value;
-                return RE_PluginInstance.GetPrivateProperty<bool>("IsFishingBonanzaEnabled");
+                return RE_PluginInstance.GetStaticProperty<bool>("IsFishingBonanzaEnabled");
             }
         }
         internal static bool IsIntenseStormEnabled
         {
             get
             {
-                if (RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableIntenseStorm") != null)
-                    return RE_PluginInstance.GetPrivateField<ConfigEntry<bool>>("enableIntenseStorm").Value;
-                return RE_PluginInstance.GetPrivateProperty<bool>("IsIntenseStormEnabled");
+                return RE_PluginInstance.GetStaticProperty<bool>("IsIntenseStormEnabled");
             }
         }
 

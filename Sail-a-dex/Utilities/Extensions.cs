@@ -14,5 +14,10 @@ namespace sailadex
         {
             return (T)Traverse.Create(obj).Property(property).GetValue();
         }
+
+        public static T GetStaticProperty<T>(this object obj, string property)
+        {
+            return (T)Traverse.Create(obj.GetType()).Property(property).GetValue();
+        }
     }
 }
