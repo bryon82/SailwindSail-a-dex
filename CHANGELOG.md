@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.8.0] - 2026-06-30
+
+### Updated
+- Sail-a-dex bookmarks in logbook to respond like other bookmarks when selected.
+- Starting the transition away from ModSaveBackups as Sail-a-dex data will now be saved in the main save file. Leaving ModSaveBackups as a dependency for now as it is needed for the load before saving data into the main save file.
+
 ## [v1.7.1] - 2026-06-23
 
 ### Fixed

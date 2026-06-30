@@ -214,12 +214,12 @@ namespace sailadex
                 if (statsUIEnabled.Value &&
                     GameState.currentBoat != null &&
                     StatsUI.Instance.IsUnderway &&
-                    __result <= 0.33f) //WeatherStorms.instance.GetPrivateField<float>("rainBorder"))
+                    __result <= 0.33f) //"rainBorder"
                 {
                     StatsUI.Instance.IncrementStormsWeathered();
                 }
 
-                if (__result > 0.66f) //WeatherStorms.instance.GetPrivateField<float>("cloudyBorder"))
+                if (__result > 0.66f) //"cloudyBorder"
                     StatsUI.Instance.ClearLastStorm();
             }
         }

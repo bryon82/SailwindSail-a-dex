@@ -17,14 +17,42 @@ namespace sailadex
         {
             var config = SAD_Plugin.Instance.Config;
 
-            fishNamesHidden = config.Bind("Settings", "Hide Fish Names Before Caught", true, "true = fish names will be hidden before being caught for the first time.");
-            portNamesHidden = config.Bind("Settings", "Hide Port Names Before Visited", false, "true = port names will be hidden before visited for the first time.");
-            fishCaughtUIEnabled = config.Bind("Settings", "Enable Fish Caught UI", true, "true = UI for how many fish you caught will be enabled.");
-            portsVisitedUIEnabled = config.Bind("Settings", "Enable Ports Visited UI", true, "true = UI for which ports you have visited will be enabled.");
-            statsUIEnabled = config.Bind("Settings", "Enable Stats UI", true, "true = UI for various stats will be enabled.");
-            notificationsEnabled = config.Bind("Settings", "Enable Notifications", true, "true = notifications on badge earned will be enabled.");
-            notificationSoundVolume = config.Bind("Settings", "Notification Volume", 0.2f, "Above 1f is loud and not recommended. Set to 0f to disable.");
-            updateMilesSailed = config.Bind("Settings", "Miles Sailed Updates", "moored", new ConfigDescription("Miles sailed text will be updated once moored, going to sleeping or moored, or in real time.", new AcceptableValueList<string>("moored", "sleep", "realtime")));
+            fishCaughtUIEnabled = config.Bind(
+                "Enable/Disable UI",
+                "Fish Caught UI",
+                true);
+            portsVisitedUIEnabled = config.Bind(
+                "Enable/Disable UI",
+                "Ports Visited UI",
+                true);
+            statsUIEnabled = config.Bind(
+                "Enable/Disable UI",
+                "Stats UI",
+                true);
+
+            fishNamesHidden = config.Bind(
+                "Gameplay Settings",
+                "Hide Fish Names Before Caught",
+                true);
+            portNamesHidden = config.Bind(
+                "Gameplay Settings",
+                "Hide Port Names Before Visited",
+                false);
+            updateMilesSailed = config.Bind(
+                "Gameplay Settings",
+                "Miles Sailed Updates",
+                "moored",
+                new ConfigDescription("Miles sailed text will be updated once moored, going to sleeping or moored, or in real time.", new AcceptableValueList<string>("moored", "sleep", "realtime")));
+
+            notificationsEnabled = config.Bind(
+                "Notification Settings",
+                "Notification on badge earned",
+                true);
+            notificationSoundVolume = config.Bind(
+                "Notification Settings",
+                "Notification Volume",
+                0.2f,
+                "Above 1f is loud and not recommended. Set to 0f to disable.");
         }
     }
 }

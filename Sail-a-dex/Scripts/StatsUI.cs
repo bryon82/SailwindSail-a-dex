@@ -64,10 +64,6 @@ namespace sailadex
         public static IReadOnlyDictionary<string, Func<bool>> RandomEncounterStats => _randomEncounterStats;
         public static List<float> RandomEncounterStatYPos { get; set; }
 
-        public IReadOnlyDictionary<string, float> FloatStats => _floatStats;
-        public IReadOnlyDictionary<string, int> IntStats => _intStats;
-        public IReadOnlyDictionary<string, bool[]> BoolArrayStats => _boolArrayStats;
-
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -521,6 +517,26 @@ namespace sailadex
         public void SetUIElems(Dictionary<string, TextMesh> statTMs)
         {
             _statTMs = statTMs;
+        }
+
+        public void LoadStatsUI()
+        {
+            ModData.GetDictEntry($"{PLUGIN_NAME}.IntStats", _intStats);
+            ModData.GetDictEntry($"{PLUGIN_NAME}.FloatStats", _floatStats);
+            ModData.GetDictEntry($"{PLUGIN_NAME}.BoolArrayStats", _boolArrayStats);
+            IsUnderway = ModData.GetEntry<bool>($"{PLUGIN_NAME}.IsUnderway");
+            lastPortVisited = ModData.GetEntry<string>($"{PLUGIN_NAME}.LastPortVisited");
+            lastStorm = ModData.GetEntry<string>($"{PLUGIN_NAME}.LastStorm");
+        }
+
+        public void SaveStatsUI()
+        {
+            ModData.AddDictEntry($"{PLUGIN_NAME}.IntStats", _intStats);
+            ModData.AddDictEntry($"{PLUGIN_NAME}.FloatStats", _floatStats);
+            ModData.AddDictEntry($"{PLUGIN_NAME}.BoolArrayStats", _boolArrayStats);
+            ModData.AddEntry($"{PLUGIN_NAME}.IsUnderway", IsUnderway);
+            ModData.AddEntry($"{PLUGIN_NAME}.LastPortVisited", lastPortVisited);
+            ModData.AddEntry($"{PLUGIN_NAME}.LastStorm", lastStorm);
         }
 
         public void LoadFloatStats(Dictionary<string, float> floatStats)

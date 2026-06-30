@@ -14,7 +14,7 @@ namespace sailadex
     {
         public const string PLUGIN_GUID = "com.raddude.sailadex";
         public const string PLUGIN_NAME = "Sail-a-dex";
-        public const string PLUGIN_VERSION = "1.7.1";
+        public const string PLUGIN_VERSION = "1.8.0";
 
         public const string MODSAVEBACKUPS_GUID = "com.raddude.modsavebackups";
         public const string MODSAVEBACKUPS_VERSION = "1.2.0";
@@ -45,20 +45,26 @@ namespace sailadex
             AssetsLoader.Start();
             HarmonyInstance = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), PLUGIN_GUID);
 
+            var passageDudeFound = false;
             foreach (var plugin in Chainloader.PluginInfos)
             {
                 var metadata = plugin.Value.Metadata;
                 if (metadata.GUID.Equals(PASSAGEDUDE_GUID))
                 {
                     LogInfo("PassageDude mod found");
+                    passageDudeFound = true;
                     PassageDude.PatchMod();
                 }
+
                 if (metadata.GUID.Equals(RANDOMENCOUNTERS_GUID))
                 {
                     LogInfo("RandomEncounters mod found");
                     RE_PluginInstance = plugin.Value.Instance;
                     RandomEncounters.PatchMod();
                 }
+
+                if (passageDudeFound && RE_PluginInstance != null)
+                    break;
             }
         }
     }

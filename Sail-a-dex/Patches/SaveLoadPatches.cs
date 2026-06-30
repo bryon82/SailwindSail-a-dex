@@ -3,72 +3,36 @@ using ModSaveBackups;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using UnityEngine;
 using static sailadex.SAD_Plugin;
 
 namespace sailadex
 {
     internal class SaveLoadPatches
     {
+        internal static bool loadedNewData = false;
+
         [HarmonyPatch(typeof(SaveLoadManager))]
         private class SaveLoadManagerPatches
         {
             [HarmonyPostfix]
-            [HarmonyPatch("SaveModData")]
-            public static void DoSaveGamePatch()
-            {
-                var saveContainer = new SailadexSaveContainer
-                {
-                    caughtFish = FishCaughtUI.Instance.CaughtFish.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    fishBadges = FishCaughtUI.Instance.FishBadges.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    visitedPorts = PortsVisitedUI.Instance.VisitedPorts.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    portBadges = PortsVisitedUI.Instance.PortBadges.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    floatStats = StatsUI.Instance.FloatStats.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    intStats = StatsUI.Instance.IntStats.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    boolArrayStats = StatsUI.Instance.BoolArrayStats.ToDictionary(
-                    entry => entry.Key,
-                    entry => entry.Value),
-
-                    isUnderway = StatsUI.Instance.IsUnderway,
-                    lastStorm = StatsUI.Instance.lastStorm,
-                    lastPortVisited = StatsUI.Instance.lastPortVisited
-                };
-
-                ModSave.Save(Instance.Info, saveContainer);
-            }
-
-            [HarmonyPostfix]
             [HarmonyPatch("LoadModData")]
-            public static void LoadModDataPatch()
+            public static void LoadModDataOld()
             {
                 var oldSavesFile = $"{ModSave.GetSaveDirectory(SaveSlots.currentSlot)}/com.raddude82.sailadex.save";
                 if (File.Exists(oldSavesFile))
                 {
-                    LogInfo($"Found old save file");
+                    LogDebug($"Found old save file");
                     RenameOldSaves();
                 }
 
+                if (loadedNewData)
+                {
+                    LogDebug("Already loaded mod data from GameState.modData, skipping loading from ModSave file.");
+                    return;
+                }
+
                 if (!ModSave.Load(Instance.Info, out SailadexSaveContainer saveContainer))
-                { 
+                {
                     LogWarning("Save file loading failed. If this is the first time loading this save with this mod, this is normal.");
                     return;
                 }

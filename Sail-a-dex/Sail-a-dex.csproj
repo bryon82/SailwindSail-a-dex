@@ -84,9 +84,11 @@
     <Compile Include="Compatibility\PassageDude.cs" />
     <Compile Include="Compatibility\RandomEncounters.cs" />
     <Compile Include="Patches\EventPatches.cs" />
+    <Compile Include="Patches\ModDataPatches.cs" />
     <Compile Include="Scripts\FishCaughtUI.cs" />
     <Compile Include="Patches\LogUIPatches.cs" />
     <Compile Include="Utilities\Region.cs" />
+    <Compile Include="Utilities\ModData.cs" />
     <Compile Include="Utilities\UIBuilder.cs" />
     <Compile Include="Utilities\AssetsLoader.cs" />
     <Compile Include="Utilities\Configs.cs" />

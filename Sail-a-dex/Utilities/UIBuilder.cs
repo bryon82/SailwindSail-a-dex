@@ -18,7 +18,7 @@ namespace sailadex
 
         #region bookmarks
 
-        internal static List<GameObject> MakeBookmarks(GameObject modeButtons)
+        internal static (List<GameObject>, GPButtonLogMode[]) MakeBookmarks(GameObject modeButtons, List<GPButtonLogMode> existingLogModeButtons)
         {
             var bookmarks = new List<GameObject>();
             var bookmarkReceipts = modeButtons.transform.GetChild(9).gameObject;
@@ -33,6 +33,7 @@ namespace sailadex
             Traverse.Create(fcGPButtonLogMode).Field("mode").SetValue(FISH_CAUGHT);
             Object.Destroy(bookmarkFishCaught.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkFishCaught);
+            existingLogModeButtons.Add(fcGPButtonLogMode);
 
             var bookmarkPortsVisited = GameObject.Instantiate(bookmarkReceipts);
             bookmarkPortsVisited.transform.parent = modeButtons.transform;
@@ -44,6 +45,7 @@ namespace sailadex
             Traverse.Create(pvGPButtonLogMode).Field("mode").SetValue(PORTS_VISITED);
             Object.Destroy(bookmarkPortsVisited.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkPortsVisited);
+            existingLogModeButtons.Add(pvGPButtonLogMode);
 
             var bookmarkStats = GameObject.Instantiate(bookmarkReceipts);
             bookmarkStats.transform.parent = modeButtons.transform;
@@ -55,8 +57,9 @@ namespace sailadex
             Traverse.Create(sGPButtonLogMode).Field("mode").SetValue(STATS);
             Object.Destroy(bookmarkStats.GetComponent<cakeslice.Outline>());
             bookmarks.Add(bookmarkStats);
+            existingLogModeButtons.Add(sGPButtonLogMode);
 
-            return bookmarks;
+            return (bookmarks, existingLogModeButtons.ToArray());
         }
 
         #endregion

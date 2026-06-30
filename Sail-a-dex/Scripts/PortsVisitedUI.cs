@@ -16,9 +16,6 @@ namespace sailadex
         private Dictionary<string, bool> _visitedPorts;
         private Dictionary<string, bool> _portBadges;
 
-        public IReadOnlyDictionary<string, bool> VisitedPorts => _visitedPorts;
-        public IReadOnlyDictionary<string, bool> PortBadges => _portBadges;
-
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -135,6 +132,18 @@ namespace sailadex
             _portNameTMs = portNameTMs;
             _portVisitedTMs = portVisitedTMs;
             _portBadgeGOs = portBadgeGOs;
+        }
+
+        public void LoadPortsVisitedUI()
+        {
+            ModData.GetDictEntry($"{PLUGIN_NAME}.VisitedPorts", _visitedPorts);
+            ModData.GetDictEntry($"{PLUGIN_NAME}.PortBadges", _portBadges);
+        }
+
+        public void SavePortsVisitedUI()
+        {
+            ModData.AddDictEntry($"{PLUGIN_NAME}.VisitedPorts", _visitedPorts);
+            ModData.AddDictEntry($"{PLUGIN_NAME}.PortBadges", _portBadges);
         }
 
         public void LoadVisitedPorts(Dictionary<string, bool> visitedPorts)

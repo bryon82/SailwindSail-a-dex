@@ -10,6 +10,11 @@ namespace sailadex
             return (T)Traverse.Create(obj).Field(field).GetValue();
         }
 
+        public static void SetPrivateField(this object obj, string field, object value)
+        {
+            Traverse.Create(obj).Field(field).SetValue(value);
+        }
+
         public static T GetPrivateProperty<T>(this object obj, string property)
         {
             return (T)Traverse.Create(obj).Property(property).GetValue();

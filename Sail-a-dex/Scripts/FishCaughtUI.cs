@@ -44,9 +44,6 @@ namespace sailadex
             "caughtAll"
         };
 
-        public IReadOnlyDictionary<string, int> CaughtFish => _caughtFish;
-        public IReadOnlyDictionary<string, bool> FishBadges => _fishBadges;
-
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -168,39 +165,26 @@ namespace sailadex
             _fishBadgeGOs = fishBadgeGOs;
         }
 
+        public void LoadFishCaughtUI()
+        {
+            ModData.GetDictEntry($"{PLUGIN_NAME}.CaughtFish", _caughtFish);
+            ModData.GetDictEntry($"{PLUGIN_NAME}.FishBadges", _fishBadges);
+        }
+
+        public void SaveFishCaughtUI()
+        {
+            ModData.AddDictEntry($"{PLUGIN_NAME}.CaughtFish", _caughtFish);
+            ModData.AddDictEntry($"{PLUGIN_NAME}.FishBadges", _fishBadges);
+        }
+
         public void LoadCaughtFish(Dictionary<string, int> caughtFish)
         {
-            ShimmertailNameFix(caughtFish);
             SaveLoadPatches.LoadDictionary(caughtFish, _caughtFish);
         }
 
         public void LoadFishBadges(Dictionary<string, bool> fishBadges)
         {
-            ShimmertailNameFix(fishBadges);
             SaveLoadPatches.LoadDictionary(fishBadges, _fishBadges);
-        }
-
-        private void ShimmertailNameFix(Dictionary<string, int> caughtFish)
-        {
-            if (caughtFish.ContainsKey("shimmertail"))
-            {
-                caughtFish.Add("blue shimmertail", caughtFish["shimmertail"]);
-                caughtFish.Remove("shimmertail");
-                LogInfo($"Shimmertail converted to blue shimmertail in caught counts");
-            }
-        }
-
-        private void ShimmertailNameFix(Dictionary<string, bool> fishBadges)
-        {
-            foreach (var amt in FISH_BADGE_AMOUNTS)
-            {
-                if (fishBadges.ContainsKey($"shimmertail{amt}"))
-                {
-                    fishBadges.Add($"blue shimmertail{amt}", fishBadges[$"shimmertail{amt}"]);
-                    fishBadges.Remove($"shimmertail{amt}");
-                    LogInfo($"Shimmertail{amt} converted to blue shimmertail{amt} in fish badges");
-                }
-            }            
-        }
+        }        
     }
 }
