@@ -65,7 +65,7 @@ namespace sailadex
 
             foreach (var line in lines)
             {
-                var parts = line.Split('|');
+                var parts = line.Trim().Split('|');
                 if (parts.Length < 2)
                     continue;
 
