@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.9.0] - 2026-07-27
+
+### Fixed
+- Stats & transit bookmark position
+
+### Updated
+- Tracking of encounters to use new RandomEncounters API system.
+
 ## [v1.8.1] - 2026-07-01
 
 ### Fixed

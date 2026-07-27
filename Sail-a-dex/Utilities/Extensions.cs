@@ -24,5 +24,10 @@ namespace sailadex
         {
             return (T)Traverse.Create(obj.GetType()).Property(property).GetValue();
         }
+
+        public static object InvokePrivateMethod(this object obj, string method, params object[] parameters)
+        {
+            return AccessTools.Method(obj.GetType(), method).Invoke(obj, parameters);
+        }
     }
 }

@@ -25,9 +25,9 @@ namespace sailadex
                 bookmarks[2].SetActive(false);
 
                 var inactivePos = new Stack<Vector3>();
-                inactivePos.Push(new Vector3(-0.515f, 0.0032f, -0.4566f));
+                inactivePos.Push(new Vector3(-0.515f, -0.0035f, -0.4566f));
                 inactivePos.Push(new Vector3(-0.387f, 0.0028f, -0.4566f));
-                inactivePos.Push(new Vector3(-0.26f, -0.0027f, -0.4566f));
+                inactivePos.Push(new Vector3(-0.26f, 0.0032f, -0.4566f));
 
                 var activePos = new Stack<Vector3>();
                 activePos.Push(new Vector3(-0.515f, 0.0082f, -0.4516f));

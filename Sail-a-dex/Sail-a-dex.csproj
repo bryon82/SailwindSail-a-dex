@@ -82,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compatibility\PassageDude.cs" />
-    <Compile Include="Compatibility\RandomEncounters.cs" />
+    <Compile Include="Compatibility\REConfigs.cs" />
     <Compile Include="Patches\EventPatches.cs" />
     <Compile Include="Patches\ModDataPatches.cs" />
     <Compile Include="Scripts\FishCaughtUI.cs" />

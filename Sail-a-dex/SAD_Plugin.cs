@@ -1,8 +1,8 @@
-﻿using System.Reflection;
-using BepInEx;
-using HarmonyLib;
-using BepInEx.Logging;
+﻿using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
+using HarmonyLib;
+using System.Reflection;
 
 namespace sailadex
 {
@@ -14,22 +14,24 @@ namespace sailadex
     {
         public const string PLUGIN_GUID = "com.raddude.sailadex";
         public const string PLUGIN_NAME = "Sail-a-dex";
-        public const string PLUGIN_VERSION = "1.8.1";
+        public const string PLUGIN_VERSION = "1.9.0";
 
         public const string MODSAVEBACKUPS_GUID = "com.raddude.modsavebackups";
         public const string MODSAVEBACKUPS_VERSION = "1.2.0";
         public const string PASSAGEDUDE_GUID = "pr0skynesis.passagedude";
         public const string RANDOMENCOUNTERS_GUID = "com.raddude.randomencounters";
+
         internal static BaseUnityPlugin RE_PluginInstance {  get; private set; } 
+        internal static Assembly REBridge_Assembly { get; set; }
 
         internal static SAD_Plugin Instance { get; private set; }
         internal static Harmony HarmonyInstance { get; private set; }
         internal static ManualLogSource _logger;
 
-        internal static void LogDebug(string message) => _logger.LogDebug(message);
-        internal static void LogInfo(string message) => _logger.LogInfo(message);
-        internal static void LogWarning(string message) => _logger.LogWarning(message);
-        internal static void LogError(string message) => _logger.LogError(message);
+        public static void LogDebug(string message) => _logger.LogDebug(message);
+        public static void LogInfo(string message) => _logger.LogInfo(message);
+        public static void LogWarning(string message) => _logger.LogWarning(message);
+        public static void LogError(string message) => _logger.LogError(message);
 
         private void Awake()
         {
@@ -60,7 +62,9 @@ namespace sailadex
                 {
                     LogInfo("RandomEncounters mod found");
                     RE_PluginInstance = plugin.Value.Instance;
-                    RandomEncounters.PatchMod();
+                    AssetsLoader.LoadBridge();
+                    var type = AccessTools.TypeByName("EncounterTracker");
+                    AccessTools.Method(type, "TrackEncounters").Invoke(null, null);
                 }
 
                 if (passageDudeFound && RE_PluginInstance != null)

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Sail-a-dex")]
+[assembly: AssemblyTitle("RandomEncountersBridge")]
 [assembly: AssemblyDescription("https://github.com/bryon82/SailwindSail-a-dex")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("raddude")]
-[assembly: AssemblyProduct("Sail-a-dex")]
+[assembly: AssemblyProduct("RandomEncountersBridge")]
 [assembly: AssemblyCopyright("Copyright ©  2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("165a01b3-48da-400d-a25f-d6d01b2b3120")]
+[assembly: Guid("8a27e40a-f47b-4e3f-8d0a-5677ecc26bb9")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,8 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.9.0.0")]
-[assembly: AssemblyFileVersion("1.9.0.0")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

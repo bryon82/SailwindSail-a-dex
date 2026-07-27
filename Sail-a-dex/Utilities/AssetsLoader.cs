@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 using static sailadex.SAD_Plugin;
@@ -20,8 +21,12 @@ namespace sailadex
         private static bool _fishBadgesLoaded;
         private static bool _portBadgesLoaded;
 
+        const string LIB_FILE = "SailadexREBridge.dll";
+        const string ASSETS_DIR = "Assets";
+        const string BELLS_AUDIO_FILE = "twoBells.wav";
+
         private static readonly List<string> assetPaths = new List<string>() {
-            Path.Combine(Path.GetDirectoryName(Instance.Info.Location), "Assets"),
+            Path.Combine(Path.GetDirectoryName(Instance.Info.Location), ASSETS_DIR),
             Path.Combine(Path.GetDirectoryName(Instance.Info.Location))
         };
 
@@ -48,6 +53,26 @@ namespace sailadex
             Instance.StartCoroutine(LoadAssetsAsync());
         }
 
+        internal static void LoadBridge()
+        {
+            try
+            {
+                var assemblyPath = FindAssetPath(LIB_FILE);
+                if (assemblyPath == null)
+                {
+                    LogError($"Assembly file not found: {LIB_FILE}");
+                    return;
+                }
+
+                REBridge_Assembly = Assembly.LoadFrom(assemblyPath);
+                LogDebug($"Loaded assembly: {REBridge_Assembly.FullName}");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to load assembly: {ex.Message}");
+            }
+        }
+
         private static IEnumerator LoadAssetsAsync()
         {
             var audioCoroutine = Instance.StartCoroutine(LoadAudio());
@@ -63,7 +88,7 @@ namespace sailadex
 
         private static IEnumerator LoadAudio()
         {
-            var clipPath = FindAssetPath("twoBells.wav");
+            var clipPath = FindAssetPath(BELLS_AUDIO_FILE);
             using (var webRequest = UnityWebRequestMultimedia.GetAudioClip($"file://{clipPath}", AudioType.WAV))
             {
                 yield return webRequest.SendWebRequest();
@@ -245,7 +270,7 @@ namespace sailadex
 
             Color[] ringPixels = ringTexture.GetPixels();
             combinedTexture.SetPixels(ringPixels);
-            
+
             Color[] fishPixels = scaledFishTexture.GetPixels();
 
             // Blend the scaled fish onto the ring

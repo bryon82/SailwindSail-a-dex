@@ -54,11 +54,11 @@ namespace sailadex
 
         private static readonly Dictionary<string, Func<bool>> _randomEncounterStats = new Dictionary<string, Func<bool>>
         {
-            { "FlotsamEncounters", () => RandomEncounters.IsFlotsamEnabled },
-            { "DenseFogEncounters", () => RandomEncounters.IsDenseFogEnabled },
-            { "SeaLifeEncounters", () => RandomEncounters.IsSeaLifeModEnabled },
-            { "FishingBonanzaEncounters", () => RandomEncounters.IsFishingBonanzaEnabled },
-            { "IntenseStormEncounters", () => RandomEncounters.IsIntenseStormEnabled }
+            { "FlotsamEncounters", () => REConfigs.IsFlotsamEnabled },
+            { "DenseFogEncounters", () => REConfigs.IsDenseFogEnabled },
+            { "SeaLifeEncounters", () => REConfigs.IsSeaLifeModEnabled },
+            { "FishingBonanzaEncounters", () => REConfigs.IsFishingBonanzaEnabled },
+            { "IntenseStormEncounters", () => REConfigs.IsIntenseStormEnabled }
         };
 
         public static IReadOnlyDictionary<string, Func<bool>> RandomEncounterStats => _randomEncounterStats;
