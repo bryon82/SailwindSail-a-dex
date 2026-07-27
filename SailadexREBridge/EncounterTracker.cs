@@ -18,8 +18,8 @@ namespace RandomEncountersBridge
 
         public static void TrackEncounters()
         {
-            LogDebug("Tracking encounters from RandomEncounters mod.");
-            EncounterEvents.EncounterTriggered += enc => LogInfo("Encounter triggered: " + enc.Name);
+            LogInfo("Tracking encounters from RandomEncounters mod.");
+            EncounterEvents.EncounterTriggered += enc => LogDebug("Encounter triggered: " + enc.Name);
             EncounterEvents.EncounterCompleted += enc => EncounterCompleted(enc.Name);
         }
 
