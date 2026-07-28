@@ -145,15 +145,5 @@ namespace sailadex
             ModData.AddDictEntry($"{PLUGIN_NAME}.VisitedPorts", _visitedPorts);
             ModData.AddDictEntry($"{PLUGIN_NAME}.PortBadges", _portBadges);
         }
-
-        public void LoadVisitedPorts(Dictionary<string, bool> visitedPorts)
-        {
-            SaveLoadPatches.LoadDictionary(visitedPorts, _visitedPorts);
-        }
-
-        public void LoadPortBadges(Dictionary<string, bool> portBadges)
-        {
-            SaveLoadPatches.LoadDictionary(portBadges, _portBadges);
-        }
     }
 }

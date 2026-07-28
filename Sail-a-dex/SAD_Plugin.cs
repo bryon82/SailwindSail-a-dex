@@ -2,22 +2,20 @@
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
 using HarmonyLib;
+using System;
 using System.Reflection;
 
 namespace sailadex
 {
     [BepInPlugin(PLUGIN_GUID, PLUGIN_NAME, PLUGIN_VERSION)]
-    [BepInDependency(MODSAVEBACKUPS_GUID, MODSAVEBACKUPS_VERSION)]
     [BepInDependency(PASSAGEDUDE_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(RANDOMENCOUNTERS_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     public class SAD_Plugin : BaseUnityPlugin
     {
         public const string PLUGIN_GUID = "com.raddude.sailadex";
         public const string PLUGIN_NAME = "Sail-a-dex";
-        public const string PLUGIN_VERSION = "1.9.0";
+        public const string PLUGIN_VERSION = "2.0.0";
 
-        public const string MODSAVEBACKUPS_GUID = "com.raddude.modsavebackups";
-        public const string MODSAVEBACKUPS_VERSION = "1.2.0";
         public const string PASSAGEDUDE_GUID = "pr0skynesis.passagedude";
         public const string RANDOMENCOUNTERS_GUID = "com.raddude.randomencounters";
 
@@ -58,7 +56,7 @@ namespace sailadex
                     PassageDude.PatchMod();
                 }
 
-                if (metadata.GUID.Equals(RANDOMENCOUNTERS_GUID))
+                if (metadata.GUID.Equals(RANDOMENCOUNTERS_GUID) && metadata.Version >= new Version(2, 0, 0))
                 {
                     LogInfo("RandomEncounters mod found");
                     RE_PluginInstance = plugin.Value.Instance;

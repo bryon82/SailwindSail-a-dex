@@ -25,7 +25,6 @@ namespace sailadex
                 return default;
             }
 
-            SaveLoadPatches.loadedNewData = true;
             var dataString = GameState.modData[dataName];
             return (T)Convert.ChangeType(dataString, typeof(T));
         }

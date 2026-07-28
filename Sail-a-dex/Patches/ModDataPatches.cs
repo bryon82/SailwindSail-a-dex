@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace sailadex.Patches
+namespace sailadex
 {
     internal class ModDataPatches
     {

@@ -176,15 +176,5 @@ namespace sailadex
             ModData.AddDictEntry($"{PLUGIN_NAME}.CaughtFish", _caughtFish);
             ModData.AddDictEntry($"{PLUGIN_NAME}.FishBadges", _fishBadges);
         }
-
-        public void LoadCaughtFish(Dictionary<string, int> caughtFish)
-        {
-            SaveLoadPatches.LoadDictionary(caughtFish, _caughtFish);
-        }
-
-        public void LoadFishBadges(Dictionary<string, bool> fishBadges)
-        {
-            SaveLoadPatches.LoadDictionary(fishBadges, _fishBadges);
-        }        
     }
 }

@@ -2,13 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v1.9.0] - 2026-07-27
+## [v2.0.0] - 2026-07-27
 
 ### Fixed
 - Stats & transit bookmark position
 
 ### Updated
-- Tracking of encounters to use new RandomEncounters API system.
+- Tracking of encounters to use the new RandomEncounters API system. Requires RandomEncounters v2.0.0 or greater.
+
+### Removed
+- Dependency on ModSaveBackups. <b>Make sure all of your saves with Sail-a-dex data that you care about have been loaded and then saved with v1.8.1 installed before switching to this version.</b>
 
 ## [v1.8.1] - 2026-07-01
 

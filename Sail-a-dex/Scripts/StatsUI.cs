@@ -539,30 +539,6 @@ namespace sailadex
             ModData.AddEntry($"{PLUGIN_NAME}.LastStorm", lastStorm);
         }
 
-        public void LoadFloatStats(Dictionary<string, float> floatStats)
-        {
-            SaveLoadPatches.LoadDictionary(floatStats, _floatStats);
-        }
-
-        public void LoadIntStats(Dictionary<string, int> intStats)
-        {
-            SaveLoadPatches.LoadDictionary(intStats, _intStats);
-        }
-
-        public void LoadBoolArrayStats(Dictionary<string, bool[]> boolArrayStats)
-        {
-            foreach (var stat in boolArrayStats)
-            {
-                if (!_boolArrayStats.ContainsKey(stat.Key))
-                {
-                    LogWarning($"Attempted to set unknown boolArrayStat: {stat.Key}");
-                    continue;
-                }
-
-                _boolArrayStats[stat.Key] = (bool[])stat.Value.Clone();
-            }
-        }
-
         //Testing
         //public void Update()
         //{
